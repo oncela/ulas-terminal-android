@@ -62,6 +62,7 @@ public class NurOkuyucu {
     private volatile boolean barkodOkunuyor = false;
     private int rfidSayac = 0;
     private volatile int pilYuzde = -1;
+    private volatile long baslangic = 0;
     private volatile boolean pilSarj = false;
     private final Set<String> rfidGorulen = new HashSet<>();
 
@@ -77,10 +78,20 @@ public class NurOkuyucu {
         }
     }
 
-    /** Daha önce seçilen okuyucuya bağlanır; seçilmemişse false (seçim ekranı açılmalı) */
+    /** Nordic ID el terminallerinin (HH83/HH85) dahili okuyucusu: seçim ekranı açmadan buna bağlanılır */
+    private static final String DAHILI = "type=INT;addr=integrated_reader;name=Integrated Reader";
+
+    public static boolean nordicCihaz() {
+        String m = (android.os.Build.MANUFACTURER + " " + android.os.Build.MODEL).toUpperCase(java.util.Locale.ROOT);
+        return m.contains("NORDIC") || m.matches(".*\\bHH\\d{2}.*");
+    }
+
+    /** Kayıtlı okuyucuya, yoksa Nordic cihazında dahili okuyucuya bağlanır; ikisi de yoksa false (ayarlardan seçilir) */
     public boolean baslat() {
         String spec = tercihler().getString("spec", null);
+        if (spec == null && nordicCihaz()) spec = DAHILI;
         if (spec == null) return false;
+        baslangic = System.currentTimeMillis();
         try {
             NurDeviceSpec s = new NurDeviceSpec(spec);
             baglanti = NurDeviceSpec.createAutoConnectTransport(ctx, api, s);
@@ -205,7 +216,9 @@ public class NurOkuyucu {
     public boolean isBarkodVar() { return barkodVar; }
     public String getCihazAdi() { return cihazAdi; }
     public String getMod() { return mod; }
-    public boolean isSecildi() { return tercihler().contains("spec"); }
+    public boolean isSecildi() { return tercihler().contains("spec") || nordicCihaz(); }
+    /** Bağlanmaya çalışılıp 12 sn içinde bağlanamadıysa true (sayfa uyarı gösterir) */
+    public boolean isBaglanamadi() { return !bagli && baslangic > 0 && System.currentTimeMillis() - baslangic > 12000; }
 
     private SharedPreferences tercihler() {
         return ctx.getSharedPreferences(TERCIH, Context.MODE_PRIVATE);

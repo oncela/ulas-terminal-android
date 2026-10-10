@@ -143,10 +143,9 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
         if (!guvenli) {
             try {
                 okuyucu = new NurOkuyucu(this, this);
-                if (!okuyucu.baslat()) {
-                    // İlk açılış: okuyucu seçilir (HH85'te "Integrated reader"), bir daha sorulmaz
-                    okuyucu.secimEkraniAc(this);
-                }
+                // Nordic cihazında dahili okuyucuya kendiliğinden bağlanır; olmazsa ayarlardan "Okuyucu seç"
+                okuyucu.baslat();
+                zamanlayici.postDelayed(this::durumDegisti, 13000);
             } catch (Throwable e) {
                 okuyucu = null;
             }
@@ -174,6 +173,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
             o.put("guvenli", guvenli);
             o.put("bagli", okuyucu != null && okuyucu.isBagli());
             o.put("secildi", okuyucu != null && okuyucu.isSecildi());
+            o.put("baglanamadi", okuyucu == null || okuyucu.isBaglanamadi());
             o.put("okuyucu", okuyucu != null ? okuyucu.getCihazAdi() : "");
             o.put("barkod", okuyucu != null && okuyucu.isBarkodVar());
             o.put("rfid", okuyucu != null && okuyucu.isBagli());
