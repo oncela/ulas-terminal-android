@@ -67,8 +67,12 @@ public class NurOkuyucu {
         this.ctx = ctx.getApplicationContext();
         this.dinleyici = dinleyici;
         acc = new AccessoryExtension(api);
-        api.setListener(olaylar);
-        acc.registerBarcodeResultListener(barkodSonucu);
+        try {
+            api.setListener(olaylar);
+            acc.registerBarcodeResultListener(barkodSonucu);
+        } catch (Exception e) {
+            Log.e(TAG, "dinleyici kurulamadı", e);
+        }
     }
 
     /** Daha önce seçilen okuyucuya bağlanır; seçilmemişse false (seçim ekranı açılmalı) */
@@ -87,7 +91,7 @@ public class NurOkuyucu {
     }
 
     public void secimEkraniAc(Activity a) {
-        NurDeviceListActivity.startDeviceRequest(a, api);
+        try { NurDeviceListActivity.startDeviceRequest(a, api); } catch (Exception e) { Log.e(TAG, "seçim ekranı açılamadı", e); }
     }
 
     /** Seçim ekranından dönen sonuç: okuyucu kaydedilir ve bağlanılır */
@@ -95,9 +99,10 @@ public class NurOkuyucu {
         if (istek != NurDeviceListActivity.REQUEST_SELECT_DEVICE) return false;
         if (veri == null || sonuc != NurDeviceListActivity.RESULT_OK) return true;
         String spec = veri.getStringExtra(NurDeviceListActivity.SPECSTR);
+        // Seçilen cihaz bilgisi hatırlanır; bir sonraki açılışta doğrudan bağlanılır
         if (spec != null) {
             tercihler().edit().putString("spec", spec).apply();
-            if (baglanti != null) baglanti.dispose();
+            birak();
             baslat();
         }
         return true;
@@ -105,7 +110,7 @@ public class NurOkuyucu {
 
     public void unut() {
         tercihler().edit().remove("spec").apply();
-        if (baglanti != null) { baglanti.dispose(); baglanti = null; }
+        birak();
     }
 
     public void setMod(String m) {
@@ -141,11 +146,17 @@ public class NurOkuyucu {
 
     public void kapat() {
         durdur();
-        if (baglanti != null) { baglanti.onDestroy(); baglanti = null; }
+        try { if (baglanti != null) baglanti.onDestroy(); } catch (Exception ignored) { }
+        baglanti = null;
     }
 
-    public void onResume() { if (baglanti != null) baglanti.onResume(); }
-    public void onPause() { durdur(); if (baglanti != null) baglanti.onPause(); }
+    private void birak() {
+        try { if (baglanti != null) baglanti.dispose(); } catch (Exception ignored) { }
+        baglanti = null;
+    }
+
+    public void onResume() { try { if (baglanti != null) baglanti.onResume(); } catch (Exception ignored) { } }
+    public void onPause() { durdur(); try { if (baglanti != null) baglanti.onPause(); } catch (Exception ignored) { } }
 
     public boolean isBagli() { return bagli; }
     public boolean isBarkodVar() { return barkodVar; }
