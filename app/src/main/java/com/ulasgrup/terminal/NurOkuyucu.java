@@ -61,6 +61,8 @@ public class NurOkuyucu {
     private volatile boolean tetikBasili = false;
     private volatile boolean barkodOkunuyor = false;
     private int rfidSayac = 0;
+    private volatile int pilYuzde = -1;
+    private volatile boolean pilSarj = false;
     private final Set<String> rfidGorulen = new HashSet<>();
 
     public NurOkuyucu(Context ctx, Dinleyici dinleyici) {
@@ -124,6 +126,47 @@ public class NurOkuyucu {
         try { api.clearIdBuffer(); } catch (Exception ignored) { }
         rfidSayac = 0;
     }
+
+    /** RFID okuma gücü: yakin | orta | uzak (yakın: yalnız dibindeki etiketler; raf sayımında komşu rafları okumamak için) */
+    public void setGuc(String g) {
+        tercihler().edit().putString("guc", g).apply();
+        gucUygula();
+        dinleyici.durumDegisti();
+    }
+
+    public String getGuc() { return tercihler().getString("guc", "orta"); }
+
+    private void gucUygula() {
+        // NUR: 0 = en yüksek güç, her adım 1 dB düşürür (0..19)
+        String g = getGuc();
+        int seviye = "yakin".equals(g) ? 14 : "uzak".equals(g) ? 0 : 6;
+        try { if (bagli) api.setSetupTxLevel(seviye); } catch (Exception e) { Log.w(TAG, "güç ayarlanamadı", e); }
+    }
+
+    /** Sunucunun cevabına göre geri bildirim: hatada uzun bip ve çift titreşim (okuma bipinden ayırt edilsin) */
+    public void sonuc(boolean hata) {
+        if (!bagli || !hata) return;
+        try {
+            acc.beepAsync(350);
+            if (acc.getConfig().hasVibrator()) acc.vibrate(250);
+        } catch (Exception ignored) { }
+    }
+
+    /** Pil durumu (yüzde, şarjda mı); bağlantı yoksa -1 */
+    public void pilOku() {
+        try {
+            if (bagli && acc.isSupported()) {
+                com.nordicid.nurapi.AccBattery b = acc.getBatteryInfo();
+                pilYuzde = b.percentage;
+                pilSarj = b.charging;
+            }
+        } catch (Exception e) {
+            pilYuzde = -1;
+        }
+    }
+
+    public int getPilYuzde() { return pilYuzde; }
+    public boolean isPilSarj() { return pilSarj; }
 
     public void bip(int ms) {
         try { if (bagli && acc.isSupported()) acc.beepAsync(ms); } catch (Exception ignored) { }
@@ -198,6 +241,8 @@ public class NurOkuyucu {
             } catch (Exception e) {
                 Log.w(TAG, "cihaz bilgisi okunamadı", e);
             }
+            gucUygula();
+            pilOku();
             dinleyici.durumDegisti();
         }
 

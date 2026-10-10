@@ -4,4 +4,6 @@
     <string name="okuyucu_sec">Okuyucuyu seçin</string>
     <string name="baglanti_yok">Sunucuya ulaşılamıyor. İnternet bağlantısını kontrol edin.</string>
     <string name="tekrar_dene">Tekrar dene</string>
+    <string name="indiriliyor">Yeni sürüm indiriliyor; bitince kurulum açılacak.</string>
+    <string name="indirilemedi">İndirilemedi.</string>
 </resources>

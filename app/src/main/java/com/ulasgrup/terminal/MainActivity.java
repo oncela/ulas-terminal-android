@@ -39,6 +39,15 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
     private NurOkuyucu okuyucu;
     private PermissionRequest bekleyenKameraIstegi;
     private boolean guvenli = false;
+    private final android.os.Handler zamanlayici = new android.os.Handler(android.os.Looper.getMainLooper());
+    private final Runnable pilDongusu = new Runnable() {
+        @Override public void run() {
+            if (okuyucu != null) {
+                new Thread(() -> { okuyucu.pilOku(); durumDegisti(); }).start();
+            }
+            zamanlayici.postDelayed(this, 60000);
+        }
+    };
 
     @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
     @Override
@@ -60,6 +69,35 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
         CookieManager.getInstance().setAcceptThirdPartyCookies(web, false);
 
         web.addJavascriptInterface(new Kopru(), "UlasCihaz");
+        // Yeni sürüm indirme (/uygulama/indir): oturum çereziyle Android indiricisine verilir; bitince kurulum açılır
+        web.setDownloadListener((url, ua, icerik, tur, boyut) -> {
+            try {
+                android.app.DownloadManager.Request r = new android.app.DownloadManager.Request(Uri.parse(url));
+                r.addRequestHeader("Cookie", CookieManager.getInstance().getCookie(url));
+                r.addRequestHeader("User-Agent", ua);
+                r.setMimeType("application/vnd.android.package-archive");
+                r.setTitle("Ulaş Terminal");
+                r.setNotificationVisibility(android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                r.setDestinationInExternalFilesDir(this, android.os.Environment.DIRECTORY_DOWNLOADS, "UlasTerminal-" + System.currentTimeMillis() + ".apk");
+                final android.app.DownloadManager dm = (android.app.DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+                final long no = dm.enqueue(r);
+                android.widget.Toast.makeText(this, R.string.indiriliyor, android.widget.Toast.LENGTH_LONG).show();
+                ContextCompat.registerReceiver(this, new android.content.BroadcastReceiver() {
+                    @Override public void onReceive(android.content.Context c, Intent i) {
+                        if (i.getLongExtra(android.app.DownloadManager.EXTRA_DOWNLOAD_ID, -1) != no) return;
+                        try { unregisterReceiver(this); } catch (Exception ignored) { }
+                        Uri dosya = dm.getUriForDownloadedFile(no);
+                        if (dosya == null) return;
+                        Intent kur = new Intent(Intent.ACTION_VIEW);
+                        kur.setDataAndType(dosya, "application/vnd.android.package-archive");
+                        kur.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        try { startActivity(kur); } catch (Exception ignored) { }
+                    }
+                }, new android.content.IntentFilter(android.app.DownloadManager.ACTION_DOWNLOAD_COMPLETE), ContextCompat.RECEIVER_EXPORTED);
+            } catch (Exception e) {
+                android.widget.Toast.makeText(this, R.string.indirilemedi, android.widget.Toast.LENGTH_LONG).show();
+            }
+        });
         web.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
@@ -140,6 +178,9 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
             o.put("barkod", okuyucu != null && okuyucu.isBarkodVar());
             o.put("rfid", okuyucu != null && okuyucu.isBagli());
             o.put("mod", okuyucu != null ? okuyucu.getMod() : "barkod");
+            o.put("guc", okuyucu != null ? okuyucu.getGuc() : "orta");
+            o.put("pil", okuyucu != null ? okuyucu.getPilYuzde() : -1);
+            o.put("sarj", okuyucu != null && okuyucu.isPilSarj());
             return o.toString();
         } catch (Exception e) {
             return "{}";
@@ -162,6 +203,8 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
         @JavascriptInterface public void bip(int ms) { if (okuyucu != null) okuyucu.bip(Math.max(10, Math.min(ms, 1000))); }
         @JavascriptInterface public void oku() { if (okuyucu != null) okuyucu.tekOkuma(); }
         @JavascriptInterface public void durdur() { if (okuyucu != null) okuyucu.durdur(); }
+        @JavascriptInterface public void guc(String g) { if (okuyucu != null) okuyucu.setGuc(g); }
+        @JavascriptInterface public void sonuc(boolean hata) { if (okuyucu != null) okuyucu.sonuc(hata); }
     }
 
     @Override
@@ -191,12 +234,15 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
         super.onResume();
         if (okuyucu != null) okuyucu.onResume();
         web.onResume();
+        zamanlayici.removeCallbacks(pilDongusu);
+        zamanlayici.postDelayed(pilDongusu, 3000);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
     }
 
     @Override
     protected void onPause() {
         if (okuyucu != null) okuyucu.onPause();
+        zamanlayici.removeCallbacks(pilDongusu);
         web.onPause();
         CookieManager.getInstance().flush();
         super.onPause();
