@@ -21,7 +21,19 @@ jobs:
           java-version: '17'
       # Android SDK GitHub sunucularında hazır kurulu gelir (ANDROID_HOME)
       - name: Derle
-        run: ./gradlew --no-daemon assembleRelease
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon --stacktrace assembleRelease 2>&1 | tee derleme.log
+      # Derleme kırılırsa kayıt "derleme-log" dalına yazılır (sunucu okuyup düzeltebilsin)
+      - name: Hata kaydını yaz
+        if: failure()
+        run: |
+          mkdir kayit && cp derleme.log kayit/ 2>/dev/null || echo "derleme.log yok" > kayit/derleme.log
+          cd kayit
+          git init -q -b derleme-log
+          git config user.name "github-actions" && git config user.email "actions@github.com"
+          git add . && git commit -qm "Derleme hatası (${GITHUB_SHA::7})"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" derleme-log
       - uses: actions/upload-artifact@v4
         with:
           name: UlasTerminal
