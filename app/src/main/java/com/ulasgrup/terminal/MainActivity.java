@@ -100,6 +100,8 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
 
         // Önceki açılış çöktüyse kaydı gönderilir ve okuyucu bu sefer başlatılmaz (ekran yine açılır)
         guvenli = Uygulama.oncekiHatayiGonder(this);
+        // Okuyucu seçme ekranı (NurDeviceListActivity) Bluetooth tarayıcısının hazırlanmış olmasını bekler
+        try { com.nordicid.nurapi.BleScanner.init(this); } catch (Throwable ignored) { }
         if (!guvenli) {
             try {
                 okuyucu = new NurOkuyucu(this, this);

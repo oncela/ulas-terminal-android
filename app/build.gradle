@@ -8,8 +8,8 @@ android {
         // Nordic ID HH83/HH85 Android 9 (API 28); daha eski cihazlar da çalışır
         minSdkVersion 24
         targetSdkVersion 34
-        versionCode 2
-        versionName '1.0.1'
+        versionCode 3
+        versionName '1.0.2'
     }
     signingConfigs {
         // Sabit imza: yeni sürüm eskisinin üstüne kurulabilsin. Anahtar özel depoda (imza/); depo herkese açık yapılmamalı.
