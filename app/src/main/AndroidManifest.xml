@@ -21,6 +21,7 @@
     <uses-feature android:name="android.hardware.usb.host" android:required="false" />
 
     <application
+        android:name=".Uygulama"
         android:allowBackup="false"
         tools:replace="android:allowBackup,android:label"
         android:icon="@mipmap/ic_launcher"

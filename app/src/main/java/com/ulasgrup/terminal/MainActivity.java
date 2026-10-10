@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
     private WebView web;
     private NurOkuyucu okuyucu;
     private PermissionRequest bekleyenKameraIstegi;
+    private boolean guvenli = false;
 
     @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
     @Override
@@ -97,10 +98,18 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
             }
         });
 
-        okuyucu = new NurOkuyucu(this, this);
-        if (!okuyucu.baslat()) {
-            // İlk açılış: okuyucu seçilir (HH85'te "Integrated reader"), bir daha sorulmaz
-            okuyucu.secimEkraniAc(this);
+        // Önceki açılış çöktüyse kaydı gönderilir ve okuyucu bu sefer başlatılmaz (ekran yine açılır)
+        guvenli = Uygulama.oncekiHatayiGonder(this);
+        if (!guvenli) {
+            try {
+                okuyucu = new NurOkuyucu(this, this);
+                if (!okuyucu.baslat()) {
+                    // İlk açılış: okuyucu seçilir (HH85'te "Integrated reader"), bir daha sorulmaz
+                    okuyucu.secimEkraniAc(this);
+                }
+            } catch (Throwable e) {
+                okuyucu = null;
+            }
         }
         web.loadUrl(ADRES);
     }
@@ -122,12 +131,13 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
             JSONObject o = new JSONObject();
             o.put("uygulama", BuildConfig.VERSION_NAME);
             o.put("model", Build.MODEL);
-            o.put("bagli", okuyucu.isBagli());
-            o.put("secildi", okuyucu.isSecildi());
-            o.put("okuyucu", okuyucu.getCihazAdi());
-            o.put("barkod", okuyucu.isBarkodVar());
-            o.put("rfid", okuyucu.isBagli());
-            o.put("mod", okuyucu.getMod());
+            o.put("guvenli", guvenli);
+            o.put("bagli", okuyucu != null && okuyucu.isBagli());
+            o.put("secildi", okuyucu != null && okuyucu.isSecildi());
+            o.put("okuyucu", okuyucu != null ? okuyucu.getCihazAdi() : "");
+            o.put("barkod", okuyucu != null && okuyucu.isBarkodVar());
+            o.put("rfid", okuyucu != null && okuyucu.isBagli());
+            o.put("mod", okuyucu != null ? okuyucu.getMod() : "barkod");
             return o.toString();
         } catch (Exception e) {
             return "{}";
@@ -137,18 +147,25 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
     /** Sayfadan çağrılır: window.UlasCihaz.durum(), .okuyucuSec(), .mod('rfid'|'barkod'), .rfidTemizle(), .bip(ms), .oku() */
     private class Kopru {
         @JavascriptInterface public String durum() { return durumJson(); }
-        @JavascriptInterface public void okuyucuSec() { runOnUiThread(() -> okuyucu.secimEkraniAc(MainActivity.this)); }
-        @JavascriptInterface public void mod(String m) { okuyucu.setMod(m); }
-        @JavascriptInterface public void rfidTemizle() { okuyucu.rfidTemizle(); }
-        @JavascriptInterface public void bip(int ms) { okuyucu.bip(Math.max(10, Math.min(ms, 1000))); }
-        @JavascriptInterface public void oku() { okuyucu.tekOkuma(); }
-        @JavascriptInterface public void durdur() { okuyucu.durdur(); }
+        @JavascriptInterface public void okuyucuSec() {
+            runOnUiThread(() -> {
+                try {
+                    if (okuyucu == null) okuyucu = new NurOkuyucu(MainActivity.this, MainActivity.this);
+                    okuyucu.secimEkraniAc(MainActivity.this);
+                } catch (Throwable e) { okuyucu = null; }
+            });
+        }
+        @JavascriptInterface public void mod(String m) { if (okuyucu != null) okuyucu.setMod(m); }
+        @JavascriptInterface public void rfidTemizle() { if (okuyucu != null) okuyucu.rfidTemizle(); }
+        @JavascriptInterface public void bip(int ms) { if (okuyucu != null) okuyucu.bip(Math.max(10, Math.min(ms, 1000))); }
+        @JavascriptInterface public void oku() { if (okuyucu != null) okuyucu.tekOkuma(); }
+        @JavascriptInterface public void durdur() { if (okuyucu != null) okuyucu.durdur(); }
     }
 
     @Override
     protected void onActivityResult(int istek, int sonuc, Intent veri) {
         super.onActivityResult(istek, sonuc, veri);
-        if (okuyucu.secimSonucu(istek, sonuc, veri)) durumDegisti();
+        if (okuyucu != null && okuyucu.secimSonucu(istek, sonuc, veri)) durumDegisti();
     }
 
     @Override
@@ -170,14 +187,14 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
     @Override
     protected void onResume() {
         super.onResume();
-        okuyucu.onResume();
+        if (okuyucu != null) okuyucu.onResume();
         web.onResume();
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
     }
 
     @Override
     protected void onPause() {
-        okuyucu.onPause();
+        if (okuyucu != null) okuyucu.onPause();
         web.onPause();
         CookieManager.getInstance().flush();
         super.onPause();
@@ -185,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
 
     @Override
     protected void onDestroy() {
-        okuyucu.kapat();
+        if (okuyucu != null) okuyucu.kapat();
         web.destroy();
         super.onDestroy();
     }
