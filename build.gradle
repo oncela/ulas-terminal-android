@@ -1,0 +1,17 @@
+// Ulaş Terminal: Nordic ID el terminalleri için uygulama (terminal ekranları + NUR API ile okuyucu)
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.3.1'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
