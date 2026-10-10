@@ -50,6 +50,6 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     // NurApiAndroid'in cihaz arama ekranı Bluetooth tarayıcıya bağlı
     implementation 'no.nordicsemi.android.support.v18:scanner:1.4.0'
-    implementation project(':NurApiAndroid')
+    implementation files('libs/NurApiAndroid.aar')
     implementation files('libs/NurApi.jar')
 }
