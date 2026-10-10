@@ -19,7 +19,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - uses: android-actions/setup-android@v3
+      # Android SDK GitHub sunucularında hazır kurulu gelir (ANDROID_HOME)
       - name: Derle
         run: ./gradlew --no-daemon assembleRelease
       - uses: actions/upload-artifact@v4
