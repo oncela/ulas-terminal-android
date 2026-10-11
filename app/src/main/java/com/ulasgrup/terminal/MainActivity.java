@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
     private NurOkuyucu okuyucu;
     private PermissionRequest bekleyenKameraIstegi;
     private boolean guvenli = false;
+    private AcilisEkrani acilis;
     private final android.os.Handler zamanlayici = new android.os.Handler(android.os.Looper.getMainLooper());
     private final Runnable pilDongusu = new Runnable() {
         @Override public void run() {
@@ -56,7 +57,11 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         web = new WebView(this);
-        setContentView(web);
+        android.widget.FrameLayout kok = new android.widget.FrameLayout(this);
+        kok.addView(web);
+        acilis = new AcilisEkrani(this);
+        kok.addView(acilis);
+        setContentView(kok);
         WebSettings ws = web.getSettings();
         ws.setJavaScriptEnabled(true);
         ws.setDomStorageEnabled(true);
@@ -119,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
             @Override
             public void onPageFinished(WebView v, String url) {
                 durumDegisti();
+                if (acilis != null) { acilis.kapat(); acilis = null; }
             }
         });
         web.setWebChromeClient(new WebChromeClient() {
