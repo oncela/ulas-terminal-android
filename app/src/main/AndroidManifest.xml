@@ -10,6 +10,11 @@
     <uses-permission android:name="android.permission.NFC" />
     <!-- Uygulama kendi yeni sürümünü kurabilsin -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <!-- Tetiğe basınca ekranı açma: arka planda hazır bekleme + tam ekran bildirim -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- NurApiAndroid cihaz arama ekranı (Bluetooth okuyucular için; HH85 tümleşik okuyucu USB/INT üzerinden) -->
     <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
@@ -48,6 +53,11 @@
             android:exported="false"
             android:label="@string/okuyucu_sec"
             android:theme="@android:style/Theme.Dialog" />
+
+        <service
+            android:name=".HazirServis"
+            android:exported="false"
+            android:foregroundServiceType="connectedDevice" />
 
         <service
             android:name="com.nordicid.nurapi.UartService"

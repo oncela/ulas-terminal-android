@@ -170,6 +170,10 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
             }
         }
         web.loadUrl(ADRES);
+        tetikleAcildiysa(getIntent());
+        if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(this, "android.permission.POST_NOTIFICATIONS") != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{"android.permission.POST_NOTIFICATIONS"}, 8);
+        }
         try {
             android.net.ConnectivityManager cm = (android.net.ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
             cm.registerDefaultNetworkCallback(new android.net.ConnectivityManager.NetworkCallback() {
@@ -184,6 +188,29 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
     public void okundu(String kod, String tur, int rssi) {
         final String js = "window.dispatchEvent(new CustomEvent('ulas-okuma',{detail:{kod:" + JSONObject.quote(kod) + ",tur:" + JSONObject.quote(tur) + ",rssi:" + rssi + "}}))";
         runOnUiThread(() -> web.evaluateJavascript(js, null));
+    }
+
+    @Override
+    public void tetikArkaplanda() {
+        runOnUiThread(() -> {
+            try { HazirServis.uyandir(this); } catch (Exception ignored) { }
+        });
+    }
+
+    /** Tetikle açıldıysa: kilit ekranının üstünde ve ekranı açarak gelir, okuma kendiliğinden başlar */
+    private void tetikleAcildiysa(Intent i) {
+        if (i == null || !i.getBooleanExtra("tetik", false)) return;
+        i.removeExtra("tetik");
+        if (Build.VERSION.SDK_INT >= 27) { setShowWhenLocked(true); setTurnScreenOn(true); }
+        else getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+        try { ((android.app.NotificationManager) getSystemService(NOTIFICATION_SERVICE)).cancel(HazirServis.NO_TETIK); } catch (Exception ignored) { }
+        zamanlayici.postDelayed(() -> { if (okuyucu != null) okuyucu.tekOkuma(); }, 700);
+    }
+
+    @Override
+    protected void onNewIntent(Intent i) {
+        super.onNewIntent(i);
+        tetikleAcildiysa(i);
     }
 
     @Override
@@ -219,6 +246,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
             o.put("rfid", okuyucu != null && okuyucu.isBagli());
             o.put("mod", okuyucu != null ? okuyucu.getMod() : "barkod");
             o.put("guc", okuyucu != null ? okuyucu.getGuc() : "orta");
+            o.put("uyandir", okuyucu != null && okuyucu.isUyandir());
             o.put("pil", okuyucu != null ? okuyucu.getPilYuzde() : -1);
             o.put("sarj", okuyucu != null && okuyucu.isPilSarj());
             return o.toString();
@@ -261,6 +289,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
                 okuyucu.bulBasla(o.optString("onek", ""), s);
             } catch (Exception ignored) { }
         }
+        @JavascriptInterface public void uyandirma(boolean a) { if (okuyucu != null) okuyucu.setUyandir(a); }
         @JavascriptInterface public void bulDurdur() { if (okuyucu != null) okuyucu.bulDurdur(); }
         @JavascriptInterface public void tasarruf(boolean a) { if (okuyucu != null) okuyucu.setTasarruf(a); }
         @JavascriptInterface public void yenidenBaglan() {
@@ -304,6 +333,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
     protected void onResume() {
         super.onResume();
         if (okuyucu != null) okuyucu.onResume();
+        try { stopService(new Intent(this, HazirServis.class)); } catch (Exception ignored) { }
         web.onResume();
         zamanlayici.removeCallbacks(pilDongusu);
         zamanlayici.postDelayed(pilDongusu, 3000);
@@ -312,7 +342,15 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
 
     @Override
     protected void onPause() {
-        if (okuyucu != null) okuyucu.onPause();
+        // Kilit ekranının üstünde gösterme yalnız tetikle açılış içindir; arkaya geçince geri alınır
+        if (Build.VERSION.SDK_INT >= 27) { setShowWhenLocked(false); setTurnScreenOn(false); }
+        else getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+        if (okuyucu != null) {
+            okuyucu.onPause();
+            if (okuyucu.isUyandir() && okuyucu.isBagli()) {
+                try { ContextCompat.startForegroundService(this, new Intent(this, HazirServis.class)); } catch (Exception ignored) { }
+            }
+        }
         zamanlayici.removeCallbacks(pilDongusu);
         web.onPause();
         CookieManager.getInstance().flush();
@@ -322,6 +360,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
     @Override
     protected void onDestroy() {
         if (okuyucu != null) okuyucu.kapat();
+        try { stopService(new Intent(this, HazirServis.class)); } catch (Exception ignored) { }
         web.destroy();
         super.onDestroy();
     }

@@ -6,4 +6,6 @@
     <string name="tekrar_dene">Tekrar dene</string>
     <string name="indiriliyor">Yeni sürüm indiriliyor; bitince kurulum açılacak.</string>
     <string name="indirilemedi">İndirilemedi.</string>
+    <string name="hazir_bildirim">Okuyucu hazır: tetiğe basınca açılır</string>
+    <string name="tetik_bildirim">Okutma için açılıyor…</string>
 </resources>

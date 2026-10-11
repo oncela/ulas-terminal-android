@@ -49,6 +49,8 @@ public class NurOkuyucu {
         void durumDegisti();
         void yazmaSonucu(boolean ok, String epc, String eski, String hata);
         void bulSinyal(String epc, int rssi);
+        /** Uygulama arka plandayken tetiğe basıldı: ekran açılıp uygulama öne gelmeli */
+        void tetikArkaplanda();
     }
 
     private final Context ctx;
@@ -71,6 +73,11 @@ public class NurOkuyucu {
     private volatile String bulOnek = null;
     private volatile Set<String> bulEpcler = new HashSet<>();
     private volatile String bulOncekiMod = null;
+    private volatile boolean arkaplan = false;
+
+    public void setArkaplan(boolean a) { arkaplan = a; }
+    public boolean isUyandir() { return tercihler().getBoolean("uyandir", true); }
+    public void setUyandir(boolean a) { tercihler().edit().putBoolean("uyandir", a).apply(); }
 
     public NurOkuyucu(Context ctx, Dinleyici dinleyici) {
         this.ctx = ctx.getApplicationContext();
@@ -294,8 +301,13 @@ public class NurOkuyucu {
         baglanti = null;
     }
 
-    public void onResume() { try { if (baglanti != null) baglanti.onResume(); } catch (Exception ignored) { } }
-    public void onPause() { durdur(); try { if (baglanti != null) baglanti.onPause(); } catch (Exception ignored) { } }
+    public void onResume() { arkaplan = false; try { if (baglanti != null) baglanti.onResume(); } catch (Exception ignored) { } }
+    public void onPause() {
+        durdur();
+        // "Tetikle aç" açıkken bağlantı arka planda da açık kalır (tetik olayı gelsin)
+        if (isUyandir() && bagli) { arkaplan = true; return; }
+        try { if (baglanti != null) baglanti.onPause(); } catch (Exception ignored) { }
+    }
 
     public boolean isBagli() { return bagli; }
     public boolean isBarkodVar() { return barkodVar; }
@@ -357,6 +369,11 @@ public class NurOkuyucu {
 
         public void IOChangeEvent(NurEventIOChange e) {
             if (e.source != TETIK) return;
+            if (arkaplan) {
+                // Ekran kapalı / uygulama arkada: okumadan önce uygulama öne gelir, okuma orada başlar
+                if (e.direction == 1) dinleyici.tetikArkaplanda();
+                return;
+            }
             try {
                 if (e.direction == 1) {
                     tetikBasili = true;
