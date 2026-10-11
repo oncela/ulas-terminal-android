@@ -34,6 +34,16 @@ jobs:
           git config user.name "github-actions" && git config user.email "actions@github.com"
           git add . && git commit -qm "Derleme hatası (${GITHUB_SHA::7})"
           git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" derleme-log
+      # APK doğrulama: imza sertifikası ve istenen izinler (sonuç apk dalına yazılır)
+      - name: APK doğrula
+        run: |
+          BT=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -1)
+          APK=$(ls app/build/outputs/apk/release/*.apk)
+          { echo "== imza"; $BT/apksigner verify --verbose --print-certs "$APK" | grep -E "Verified|Signer #1 certificate (SHA-256|DN)";
+            echo "== izinler"; $BT/aapt dump permissions "$APK" | sed -n '2,100p';
+            echo "== surum"; $BT/aapt dump badging "$APK" | head -1; } > dogrulama.txt 2>&1
+          cat dogrulama.txt
+          $BT/apksigner verify "$APK"
       - uses: actions/upload-artifact@v4
         with:
           name: UlasTerminal
@@ -42,7 +52,7 @@ jobs:
       - name: APK dalına koy
         if: github.ref == 'refs/heads/main'
         run: |
-          mkdir dagitim && cp app/build/outputs/apk/release/*.apk dagitim/UlasTerminal.apk
+          mkdir dagitim && cp app/build/outputs/apk/release/*.apk dagitim/UlasTerminal.apk && cp dogrulama.txt dagitim/
           grep -oE "versionName ['\"][^'\"]+" app/build.gradle | grep -oE '[0-9][0-9A-Za-z.-]*' > dagitim/surum.txt
           cd dagitim
           git init -q -b apk
@@ -54,3 +64,41 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: app/build/outputs/apk/release/*.apk
+
+  # Emülatör testi: uygulama Android 10 emülatöründe açılır, sayfa ve köprü sınanır (okuyucusuz).
+  # Sonuç "test-sonuc" dalına yazılır (sunucu okuyabilsin); APK yayını bu işi beklemez.
+  emulator:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Emülatörde test
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          arch: x86_64
+          target: default
+          disable-animations: true
+          script: ./gradlew --no-daemon connectedDebugAndroidTest > emulator-test.log 2>&1 || (adb logcat -d -s AndroidRuntime:E UlasOkuyucu:W > logcat.txt; exit 1)
+      - name: Sonucu yaz
+        if: always()
+        run: |
+          mkdir sonuc && cp emulator-test.log sonuc/ 2>/dev/null || echo "log yok" > sonuc/emulator-test.log
+          cp logcat.txt sonuc/ 2>/dev/null || true
+          cp -r app/build/outputs/androidTest-results sonuc/ 2>/dev/null || true
+          echo "${{ job.status }} ${GITHUB_SHA::7}" > sonuc/durum.txt
+          cd sonuc
+          git init -q -b test-sonuc
+          git config user.name "github-actions" && git config user.email "actions@github.com"
+          git add . && git commit -qm "Emülatör testi (${GITHUB_SHA::7})"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" test-sonuc

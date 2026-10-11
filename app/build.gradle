@@ -10,6 +10,7 @@ android {
         targetSdkVersion 34
         versionCode 16
         versionName '1.8.4'
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     signingConfigs {
         // Sabit imza: yeni sürüm eskisinin üstüne kurulabilsin. Anahtar özel depoda (imza/); depo herkese açık yapılmamalı.
@@ -52,4 +53,7 @@ dependencies {
     implementation 'no.nordicsemi.android.support.v18:scanner:1.4.0'
     implementation files('libs/NurApiAndroid.aar')
     implementation files('libs/NurApi.jar')
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestImplementation 'androidx.test:core:1.5.0'
 }
