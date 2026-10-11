@@ -20,12 +20,14 @@ import android.widget.TextView;
 
 /**
  * Açılış ekranı: uygulama ikonu "nefes alır", arkasından kırmızı dalgalar yayılır; sayfa yüklenince yumuşakça kaybolur.
- * En az 0,9 sn görünür (göz kırpma gibi kaybolmasın), en fazla 10 sn (bağlantı yoksa hata sayfası görünsün).
+ * En az 5 sn görünür, en fazla 10 sn (bağlantı yoksa hata sayfası görünsün).
  */
 public class AcilisEkrani extends FrameLayout {
     private static final int KIRMIZI = Color.rgb(215, 38, 30);
     private final long baslangic = SystemClock.uptimeMillis();
     private boolean kapaniyor = false;
+    /** En az gösterim süresi (ms) */
+    private static final long EN_AZ = 5000;
 
     public AcilisEkrani(Context c) {
         super(c);
@@ -98,7 +100,7 @@ public class AcilisEkrani extends FrameLayout {
     public void kapat() {
         if (kapaniyor) return;
         long gecen = SystemClock.uptimeMillis() - baslangic;
-        if (gecen < 900) { postDelayed(this::kapat, 900 - gecen); return; }
+        if (gecen < EN_AZ) { postDelayed(this::kapat, EN_AZ - gecen); return; }
         kapaniyor = true;
         animate().alpha(0f).scaleX(1.04f).scaleY(1.04f).setDuration(350).withEndAction(() -> {
             setVisibility(View.GONE);

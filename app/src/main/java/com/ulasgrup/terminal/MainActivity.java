@@ -40,6 +40,15 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
     private PermissionRequest bekleyenKameraIstegi;
     private boolean guvenli = false;
     private AcilisEkrani acilis;
+    /** Bağlantı yok sayfası açıksa: ağ gelince ya da 8 sn'de bir sistem yeniden açılır (elle "Tekrar dene" gerekmez) */
+    private volatile boolean hataSayfasi = false;
+    private final Runnable yenidenDene = new Runnable() {
+        @Override public void run() {
+            if (!hataSayfasi) return;
+            web.loadUrl(ADRES);
+            zamanlayici.postDelayed(this, 8000);
+        }
+    };
     private final android.os.Handler zamanlayici = new android.os.Handler(android.os.Looper.getMainLooper());
     private final Runnable pilDongusu = new Runnable() {
         @Override public void run() {
@@ -116,6 +125,9 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
             @Override
             public void onReceivedError(WebView v, WebResourceRequest r, WebResourceError e) {
                 if (r.isForMainFrame()) {
+                    hataSayfasi = true;
+                    zamanlayici.removeCallbacks(yenidenDene);
+                    zamanlayici.postDelayed(yenidenDene, 8000);
                     v.loadData("<html><body style='font-family:sans-serif;padding:32px;text-align:center'><h2>Bağlantı yok</h2><p>"
                         + getString(R.string.baglanti_yok) + "</p><p><a href='" + ADRES + "' style='font-size:18px'>" + getString(R.string.tekrar_dene) + "</a></p></body></html>", "text/html; charset=utf-8", "UTF-8");
                 }
@@ -123,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
 
             @Override
             public void onPageFinished(WebView v, String url) {
+                if (url != null && url.startsWith("https://" + ALAN)) hataSayfasi = false;
                 durumDegisti();
                 if (acilis != null) { acilis.kapat(); acilis = null; }
             }
@@ -157,11 +170,26 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
             }
         }
         web.loadUrl(ADRES);
+        try {
+            android.net.ConnectivityManager cm = (android.net.ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+            cm.registerDefaultNetworkCallback(new android.net.ConnectivityManager.NetworkCallback() {
+                @Override public void onAvailable(android.net.Network n) {
+                    runOnUiThread(() -> { if (hataSayfasi) { zamanlayici.removeCallbacks(yenidenDene); zamanlayici.postDelayed(yenidenDene, 1500); } });
+                }
+            });
+        } catch (Exception ignored) { }
     }
 
     @Override
-    public void okundu(String kod, String tur) {
-        final String js = "window.dispatchEvent(new CustomEvent('ulas-okuma',{detail:{kod:" + JSONObject.quote(kod) + ",tur:" + JSONObject.quote(tur) + "}}))";
+    public void okundu(String kod, String tur, int rssi) {
+        final String js = "window.dispatchEvent(new CustomEvent('ulas-okuma',{detail:{kod:" + JSONObject.quote(kod) + ",tur:" + JSONObject.quote(tur) + ",rssi:" + rssi + "}}))";
+        runOnUiThread(() -> web.evaluateJavascript(js, null));
+    }
+
+    @Override
+    public void yazmaSonucu(boolean ok, String epc, String eski, String hata) {
+        final String js = "window.dispatchEvent(new CustomEvent('ulas-rfid-yazma',{detail:{ok:" + ok + ",epc:" + JSONObject.quote(epc) + ",eski:" + JSONObject.quote(eski == null ? "" : eski)
+            + ",hata:" + (hata == null ? "null" : JSONObject.quote(hata)) + "}}))";
         runOnUiThread(() -> web.evaluateJavascript(js, null));
     }
 
@@ -210,6 +238,10 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
         @JavascriptInterface public void oku() { if (okuyucu != null) okuyucu.tekOkuma(); }
         @JavascriptInterface public void durdur() { if (okuyucu != null) okuyucu.durdur(); }
         @JavascriptInterface public void guc(String g) { if (okuyucu != null) okuyucu.setGuc(g); }
+        @JavascriptInterface public void yaz(String epc) {
+            if (okuyucu != null && epc != null && epc.matches("^[0-9A-Fa-f]{24,64}$")) okuyucu.yaz(epc);
+            else yazmaSonucu(false, epc, "", "Geçersiz istek");
+        }
         @JavascriptInterface public void sonuc(boolean hata) { if (okuyucu != null) okuyucu.sonuc(hata); }
     }
 

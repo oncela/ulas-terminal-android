@@ -45,8 +45,9 @@ public class NurOkuyucu {
     private static final int TETIK = 100;
 
     public interface Dinleyici {
-        void okundu(String kod, String tur);
+        void okundu(String kod, String tur, int rssi);
         void durumDegisti();
+        void yazmaSonucu(boolean ok, String epc, String eski, String hata);
     }
 
     private final Context ctx;
@@ -179,6 +180,46 @@ public class NurOkuyucu {
     public int getPilYuzde() { return pilYuzde; }
     public boolean isPilSarj() { return pilSarj; }
 
+    /**
+     * En yakındaki etikete yeni EPC yazar. Okuma alanında yakın birden fazla etiket varsa yazmaz (yanlış etikete yazılmasın).
+     * Sonuç dinleyiciye gider (sayfada "ulas-rfid-yazma" olayı).
+     */
+    public void yaz(final String yeniEpc) {
+        new Thread(() -> {
+            String eski = "";
+            try {
+                if (!bagli) throw new Exception("Okuyucu bağlı değil");
+                durdur();
+                byte[] yeni = NurApi.hexStringToByteArray(yeniEpc);
+                api.clearIdBuffer();
+                api.inventory();
+                api.fetchTags();
+                NurTagStorage depo = api.getStorage();
+                NurTag en = null, ikinci = null;
+                synchronized (depo) {
+                    for (int i = 0; i < depo.size(); i++) {
+                        NurTag t = depo.get(i);
+                        if (en == null || t.getRssi() > en.getRssi()) { ikinci = en; en = t; }
+                        else if (ikinci == null || t.getRssi() > ikinci.getRssi()) ikinci = t;
+                    }
+                }
+                if (en == null) throw new Exception("Etiket bulunamadı; etiketi okuyucuya yaklaştırın");
+                if (ikinci != null && en.getRssi() - ikinci.getRssi() < 8) throw new Exception("Yakında birden fazla etiket var; yazılacak etiketi tek başına tutun");
+                byte[] mevcut = en.getEpc();
+                eski = NurApi.byteArrayToHexString(mevcut);
+                api.writeEpcByEpc(mevcut, mevcut.length, yeni.length, yeni);
+                try { acc.beepAsync(120); } catch (Exception ignored) { }
+                dinleyici.yazmaSonucu(true, yeniEpc, eski, null);
+            } catch (Exception e) {
+                try { acc.beepAsync(400); } catch (Exception ignored) { }
+                dinleyici.yazmaSonucu(false, yeniEpc, eski, e.getMessage() != null ? e.getMessage() : e.toString());
+            } finally {
+                try { api.clearIdBuffer(); } catch (Exception ignored) { }
+                rfidGorulen.clear();
+            }
+        }).start();
+    }
+
     public void bip(int ms) {
         try { if (bagli && acc.isSupported()) acc.beepAsync(ms); } catch (Exception ignored) { }
     }
@@ -225,6 +266,8 @@ public class NurOkuyucu {
     }
 
     private void rfidBaslat() throws Exception {
+        // Her tetikte yeniden: aynı etiketin iki kez sayılmasını sayfa önler (ürün bulda aynı etiket tekrar okunabilsin)
+        rfidGorulen.clear();
         rfidSayac = 0;
         api.clearIdBuffer();
         api.startInventoryStream();
@@ -235,7 +278,7 @@ public class NurOkuyucu {
             barkodOkunuyor = false;
             if (r.status == NurApiErrors.NUR_SUCCESS && r.strBarcode != null && r.strBarcode.trim().length() > 0) {
                 try { acc.beepAsync(60); if (acc.getConfig().hasVibrator()) acc.vibrate(80); } catch (Exception ignored) { }
-                dinleyici.okundu(r.strBarcode.trim(), "barkod");
+                dinleyici.okundu(r.strBarcode.trim(), "barkod", 0);
             }
         }
     };
@@ -300,7 +343,7 @@ public class NurOkuyucu {
                     for (int i = rfidSayac; i < depo.size(); i++) {
                         NurTag t = depo.get(i);
                         String epc = NurApi.byteArrayToHexString(t.getEpc());
-                        if (rfidGorulen.add(epc)) dinleyici.okundu(epc, "rfid");
+                        if (rfidGorulen.add(epc)) dinleyici.okundu(epc, "rfid", t.getRssi());
                     }
                     rfidSayac = depo.size();
                 }
