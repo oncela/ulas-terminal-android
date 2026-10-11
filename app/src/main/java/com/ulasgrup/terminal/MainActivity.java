@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        // Ekran sürekli açık tutulmaz (pil): okutma ekranları çalışılırken UlasCihaz.ekranAcik(true) ile ister, boşta bırakır
 
         web = new WebView(this);
         android.widget.FrameLayout kok = new android.widget.FrameLayout(this);
@@ -238,6 +238,13 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
         @JavascriptInterface public void oku() { if (okuyucu != null) okuyucu.tekOkuma(); }
         @JavascriptInterface public void durdur() { if (okuyucu != null) okuyucu.durdur(); }
         @JavascriptInterface public void guc(String g) { if (okuyucu != null) okuyucu.setGuc(g); }
+        @JavascriptInterface public void ekranAcik(boolean a) {
+            runOnUiThread(() -> {
+                if (a) getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                else getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            });
+        }
+        @JavascriptInterface public void tasarruf(boolean a) { if (okuyucu != null) okuyucu.setTasarruf(a); }
         @JavascriptInterface public void yaz(String epc) {
             if (okuyucu != null && epc != null && epc.matches("^[0-9A-Fa-f]{24,64}$")) okuyucu.yaz(epc);
             else yazmaSonucu(false, epc, "", "Geçersiz istek");

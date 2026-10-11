@@ -148,11 +148,19 @@ public class NurOkuyucu {
 
     public String getGuc() { return tercihler().getString("guc", "orta"); }
 
+    /** Pil tasarrufu: RFID taraması yarı görev çevriminde (NUR AutoPeriod %50); okuma biraz yavaşlar, tüketim düşer */
+    public void setTasarruf(boolean a) {
+        tercihler().edit().putBoolean("tasarruf", a).apply();
+        gucUygula();
+    }
+
     private void gucUygula() {
         // NUR: 0 = en yüksek güç, her adım 1 dB düşürür (0..19)
         String g = getGuc();
         int seviye = "yakin".equals(g) ? 14 : "uzak".equals(g) ? 0 : 6;
         try { if (bagli) api.setSetupTxLevel(seviye); } catch (Exception e) { Log.w(TAG, "güç ayarlanamadı", e); }
+        // AutoPeriod: 0 = kapalı, 3 = %50 (NUR_AUTOPER_50)
+        try { if (bagli) api.setSetupAutoPeriod(tercihler().getBoolean("tasarruf", false) ? 3 : 0); } catch (Exception e) { Log.w(TAG, "tasarruf ayarlanamadı", e); }
     }
 
     /** Sunucunun cevabına göre geri bildirim: hatada uzun bip ve çift titreşim (okuma bipinden ayırt edilsin) */
