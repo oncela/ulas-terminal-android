@@ -48,6 +48,27 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
     };
     private android.speech.tts.TextToSpeech ses;
     private boolean sesHazir = false;
+    /** Metin okuma durumu: bekliyor | hazir | dil_yok | motor_yok | hata */
+    private volatile String sesDurum = "bekliyor";
+    private String sesBekleyen = null;
+
+    /** Metin okuma motoru açılışta hazırlanır; Türkçe yoksa durum sayfaya bildirilir (ayarlarda kurulum düğmesi) */
+    private void sesHazirla() {
+        if (ses != null) return;
+        try {
+            ses = new android.speech.tts.TextToSpeech(this, durum -> {
+                if (durum != android.speech.tts.TextToSpeech.SUCCESS) { sesDurum = ses != null && ses.getEngines().isEmpty() ? "motor_yok" : "hata"; durumDegisti(); return; }
+                int r = ses.setLanguage(new java.util.Locale("tr", "TR"));
+                sesDurum = (r == android.speech.tts.TextToSpeech.LANG_MISSING_DATA || r == android.speech.tts.TextToSpeech.LANG_NOT_SUPPORTED) ? "dil_yok" : "hazir";
+                ses.setSpeechRate(1.05f);
+                sesHazir = true;
+                durumDegisti();
+                if (sesBekleyen != null) { ses.speak(sesBekleyen, android.speech.tts.TextToSpeech.QUEUE_FLUSH, null, "ulas"); sesBekleyen = null; }
+            });
+        } catch (Throwable e) {
+            sesDurum = "motor_yok";
+        }
+    }
     /** Bağlantı yok sayfası açıksa: ağ gelince ya da 8 sn'de bir sistem yeniden açılır (elle "Tekrar dene" gerekmez) */
     private volatile boolean hataSayfasi = false;
     private final Runnable yenidenDene = new Runnable() {
@@ -179,6 +200,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
         }
         web.loadUrl(ADRES);
         tetikleAcildiysa(getIntent());
+        sesHazirla();
         if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(this, "android.permission.POST_NOTIFICATIONS") != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{"android.permission.POST_NOTIFICATIONS"}, 8);
         }
@@ -257,6 +279,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
             o.put("mod", okuyucu != null ? okuyucu.getMod() : "barkod");
             o.put("guc", okuyucu != null ? okuyucu.getGuc() : "orta");
             o.put("uyandir", okuyucu != null && okuyucu.isUyandir());
+            o.put("tts", sesDurum);
             o.put("pil", okuyucu != null ? okuyucu.getPilYuzde() : -1);
             o.put("sarj", okuyucu != null && okuyucu.isPilSarj());
             return o.toString();
@@ -305,18 +328,22 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
             if (metin == null || metin.isEmpty()) return;
             final String m = metin.length() > 300 ? metin.substring(0, 300) : metin;
             runOnUiThread(() -> {
-                if (ses == null) {
-                    ses = new android.speech.tts.TextToSpeech(MainActivity.this, durum -> {
-                        if (durum == android.speech.tts.TextToSpeech.SUCCESS) {
-                            ses.setLanguage(new java.util.Locale("tr", "TR"));
-                            ses.setSpeechRate(1.05f);
-                            sesHazir = true;
-                            ses.speak(m, android.speech.tts.TextToSpeech.QUEUE_FLUSH, null, "ulas");
-                        }
-                    });
-                } else if (sesHazir) {
-                    ses.speak(m, android.speech.tts.TextToSpeech.QUEUE_FLUSH, null, "ulas");
-                }
+                if (ses == null) sesHazirla();
+                if (sesHazir) ses.speak(m, android.speech.tts.TextToSpeech.QUEUE_FLUSH, null, "ulas");
+                else sesBekleyen = m;
+            });
+        }
+        /** Türkçe ses paketi kurulumu / metin okuma ayarları */
+        @JavascriptInterface public void sesPaketi() {
+            runOnUiThread(() -> {
+                try { startActivity(new Intent(android.speech.tts.TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA)); }
+                catch (Exception e) { sesAyarlari(); }
+            });
+        }
+        @JavascriptInterface public void sesAyarlari() {
+            runOnUiThread(() -> {
+                try { startActivity(new Intent("com.android.settings.TTS_SETTINGS")); }
+                catch (Exception e) { try { startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS)); } catch (Exception ignored) { } }
             });
         }
         @JavascriptInterface public void uyandirma(boolean a) { if (okuyucu != null) okuyucu.setUyandir(a); }
