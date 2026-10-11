@@ -40,6 +40,14 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
     private PermissionRequest bekleyenKameraIstegi;
     private boolean guvenli = false;
     private AcilisEkrani acilis;
+    private static final long ARKAPLAN_SURE = 30 * 60 * 1000L;
+    /** 30 dk tetiğe basılmadı: okuyucu bırakılır, "hazır" bildirimi kalkar (pil) */
+    private final Runnable arkaplanBitir = () -> {
+        if (okuyucu != null) okuyucu.arkaplaniBirak();
+        try { stopService(new Intent(this, HazirServis.class)); } catch (Exception ignored) { }
+    };
+    private android.speech.tts.TextToSpeech ses;
+    private boolean sesHazir = false;
     /** Bağlantı yok sayfası açıksa: ağ gelince ya da 8 sn'de bir sistem yeniden açılır (elle "Tekrar dene" gerekmez) */
     private volatile boolean hataSayfasi = false;
     private final Runnable yenidenDene = new Runnable() {
@@ -193,6 +201,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
     @Override
     public void tetikArkaplanda() {
         runOnUiThread(() -> {
+            zamanlayici.removeCallbacks(arkaplanBitir);
             try { HazirServis.uyandir(this); } catch (Exception ignored) { }
         });
     }
@@ -289,6 +298,26 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
                 okuyucu.bulBasla(o.optString("onek", ""), s);
             } catch (Exception ignored) { }
         }
+        @JavascriptInterface public void okutmaEkrani(boolean a) { if (okuyucu != null) okuyucu.setOkutmaEkrani(a); }
+        /** Sesli yönlendirme: Android'in Türkçe sesi */
+        @JavascriptInterface public void konus(String metin) {
+            if (metin == null || metin.isEmpty()) return;
+            final String m = metin.length() > 300 ? metin.substring(0, 300) : metin;
+            runOnUiThread(() -> {
+                if (ses == null) {
+                    ses = new android.speech.tts.TextToSpeech(MainActivity.this, durum -> {
+                        if (durum == android.speech.tts.TextToSpeech.SUCCESS) {
+                            ses.setLanguage(new java.util.Locale("tr", "TR"));
+                            ses.setSpeechRate(1.05f);
+                            sesHazir = true;
+                            ses.speak(m, android.speech.tts.TextToSpeech.QUEUE_FLUSH, null, "ulas");
+                        }
+                    });
+                } else if (sesHazir) {
+                    ses.speak(m, android.speech.tts.TextToSpeech.QUEUE_FLUSH, null, "ulas");
+                }
+            });
+        }
         @JavascriptInterface public void uyandirma(boolean a) { if (okuyucu != null) okuyucu.setUyandir(a); }
         @JavascriptInterface public void bulDurdur() { if (okuyucu != null) okuyucu.bulDurdur(); }
         @JavascriptInterface public void tasarruf(boolean a) { if (okuyucu != null) okuyucu.setTasarruf(a); }
@@ -334,6 +363,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
         super.onResume();
         if (okuyucu != null) okuyucu.onResume();
         try { stopService(new Intent(this, HazirServis.class)); } catch (Exception ignored) { }
+        zamanlayici.removeCallbacks(arkaplanBitir);
         web.onResume();
         zamanlayici.removeCallbacks(pilDongusu);
         zamanlayici.postDelayed(pilDongusu, 3000);
@@ -346,9 +376,12 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
         if (Build.VERSION.SDK_INT >= 27) { setShowWhenLocked(false); setTurnScreenOn(false); }
         else getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
         if (okuyucu != null) {
+            boolean bekle = okuyucu.arkadaBekle();
             okuyucu.onPause();
-            if (okuyucu.isUyandir() && okuyucu.isBagli()) {
+            if (bekle) {
                 try { ContextCompat.startForegroundService(this, new Intent(this, HazirServis.class)); } catch (Exception ignored) { }
+                zamanlayici.removeCallbacks(arkaplanBitir);
+                zamanlayici.postDelayed(arkaplanBitir, ARKAPLAN_SURE);
             }
         }
         zamanlayici.removeCallbacks(pilDongusu);
@@ -361,6 +394,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
     protected void onDestroy() {
         if (okuyucu != null) okuyucu.kapat();
         try { stopService(new Intent(this, HazirServis.class)); } catch (Exception ignored) { }
+        if (ses != null) { try { ses.shutdown(); } catch (Exception ignored) { } }
         web.destroy();
         super.onDestroy();
     }

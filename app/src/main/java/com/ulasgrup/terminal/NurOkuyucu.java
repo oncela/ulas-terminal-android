@@ -74,6 +74,18 @@ public class NurOkuyucu {
     private volatile Set<String> bulEpcler = new HashSet<>();
     private volatile String bulOncekiMod = null;
     private volatile boolean arkaplan = false;
+    /** Sayfa okutma ekranında mı (ürün bul, sayım, toplama…): yalnız o zaman arka planda tetik beklenir */
+    private volatile boolean okutmaEkrani = false;
+
+    public void setOkutmaEkrani(boolean a) { okutmaEkrani = a; }
+    /** Arka planda tetik beklenecek mi */
+    public boolean arkadaBekle() { return isUyandir() && okutmaEkrani && bagli; }
+
+    /** Uzun süre (30 dk) tetiğe basılmadı: arka plandaki bağlantı bırakılır */
+    public void arkaplaniBirak() {
+        arkaplan = false;
+        try { if (baglanti != null) baglanti.onPause(); } catch (Exception ignored) { }
+    }
 
     public void setArkaplan(boolean a) { arkaplan = a; }
     public boolean isUyandir() { return tercihler().getBoolean("uyandir", true); }
@@ -305,7 +317,7 @@ public class NurOkuyucu {
     public void onPause() {
         durdur();
         // "Tetikle aç" açıkken bağlantı arka planda da açık kalır (tetik olayı gelsin)
-        if (isUyandir() && bagli) { arkaplan = true; return; }
+        if (arkadaBekle()) { arkaplan = true; return; }
         try { if (baglanti != null) baglanti.onPause(); } catch (Exception ignored) { }
     }
 
