@@ -64,11 +64,17 @@ public class NurOkuyucu {
     private volatile String mod = "barkod"; // barkod | rfid
     private volatile boolean tetikBasili = false;
     private volatile boolean barkodOkunuyor = false;
-    private int rfidSayac = 0;
+    private volatile int rfidSayac = 0;
+    /** Etikete yazılırken tetik / ikinci yazma başlamasın */
+    private volatile boolean yaziliyor = false;
+    private volatile boolean titresimVar = false;
+    /** Teşhis: okuyucu seri no / yazılım sürümü / bölge */
+    private volatile String okuyucuBilgi = "";
+    public String getOkuyucuBilgi() { return okuyucuBilgi; }
     private volatile int pilYuzde = -1;
     private volatile long baslangic = 0;
     private volatile boolean pilSarj = false;
-    private final Set<String> rfidGorulen = new HashSet<>();
+    private final Set<String> rfidGorulen = java.util.Collections.synchronizedSet(new HashSet<>());
     /** Etiket bul: aranan ürünün EPC öneki (sistemin yazdığı etiketler) ve bağlı etiketler */
     private volatile String bulOnek = null;
     private volatile Set<String> bulEpcler = new HashSet<>();
@@ -81,7 +87,7 @@ public class NurOkuyucu {
     private boolean titresimAcik() { return tercihler().getBoolean("titresim", true); }
     public void setGeriBildirim(boolean ses, boolean titresim) { tercihler().edit().putBoolean("ses", ses).putBoolean("titresim", titresim).apply(); }
     private void sesVer(int ms) { try { if (sesAcik()) acc.beepAsync(ms); } catch (Exception ignored) { } }
-    private void titret(int ms) { try { if (titresimAcik() && acc.getConfig().hasVibrator()) acc.vibrate(ms); } catch (Exception ignored) { } }
+    private void titret(int ms) { try { if (titresimAcik() && titresimVar) acc.vibrate(ms); } catch (Exception ignored) { } }
     /** Sayfa okutma ekranında mı (ürün bul, sayım, toplama…): yalnız o zaman arka planda tetik beklenir */
     private volatile boolean okutmaEkrani = false;
 
@@ -203,6 +209,8 @@ public class NurOkuyucu {
     public void rfidTemizle() {
         rfidGorulen.clear();
         try { api.clearIdBuffer(); } catch (Exception ignored) { }
+        // Okuyucunun belleği de boşalır; yoksa sonraki okumada eski etiketler geri gelir
+        try { NurTagStorage d = api.getStorage(); synchronized (d) { d.clear(); } } catch (Exception ignored) { }
         rfidSayac = 0;
     }
 
@@ -260,6 +268,8 @@ public class NurOkuyucu {
      * Sonuç dinleyiciye gider (sayfada "ulas-rfid-yazma" olayı).
      */
     public void yaz(final String yeniEpc) {
+        if (yaziliyor) { dinleyici.yazmaSonucu(false, yeniEpc, "", "Önceki yazma sürüyor"); return; }
+        yaziliyor = true;
         new Thread(() -> {
             String eski = "";
             try {
@@ -267,6 +277,9 @@ public class NurOkuyucu {
                 durdur();
                 byte[] yeni = NurApi.hexStringToByteArray(yeniEpc);
                 api.clearIdBuffer();
+                // Önceki okumalardan kalan etiketler seçilmesin: yalnız şu an alanda olanlar
+                NurTagStorage onceki = api.getStorage();
+                synchronized (onceki) { onceki.clear(); }
                 api.inventory();
                 api.fetchTags();
                 NurTagStorage depo = api.getStorage();
@@ -291,6 +304,7 @@ public class NurOkuyucu {
             } finally {
                 try { api.clearIdBuffer(); } catch (Exception ignored) { }
                 rfidGorulen.clear();
+                yaziliyor = false;
             }
         }).start();
     }
@@ -325,8 +339,9 @@ public class NurOkuyucu {
     public void tekOkuma() {
         try {
             if (!bagli) return;
-            if ("rfid".equals(mod)) { rfidBaslat(); } else if (barkodVar && !barkodOkunuyor) { barkodOkunuyor = true; acc.readBarcodeAsync(5000); }
-        } catch (Exception e) { Log.w(TAG, "okuma başlatılamadı", e); }
+            if (yaziliyor) return;
+            if ("rfid".equals(mod) || "bul".equals(mod)) { rfidBaslat(); } else if (barkodVar && !barkodOkunuyor) { barkodOkunuyor = true; acc.readBarcodeAsync(5000); }
+        } catch (Exception e) { barkodOkunuyor = false; Log.w(TAG, "okuma başlatılamadı", e); }
     }
 
     public void durdur() {
@@ -398,20 +413,30 @@ public class NurOkuyucu {
     private final NurApiListener olaylar = new NurApiListener() {
         public void connectedEvent() {
             bagli = true;
-            try {
-                if (acc.isSupported()) {
-                    cihazAdi = acc.getConfig().name;
-                    barkodVar = acc.getConfig().hasImagerScanner();
-                } else {
-                    cihazAdi = api.getReaderInfo().name;
-                    barkodVar = false;
+            yenidenDeneme = 0;
+            // Okuyucuya giden komutlar ayrı iş parçacığında (olay iş parçacığı / ekran bloklanmasın)
+            new Thread(() -> {
+                try {
+                    if (acc.isSupported()) {
+                        com.nordicid.nurapi.AccConfig cfg = acc.getConfig();
+                        cihazAdi = cfg.name;
+                        barkodVar = cfg.hasImagerScanner();
+                        titresimVar = cfg.hasVibrator();
+                    } else {
+                        cihazAdi = api.getReaderInfo().name;
+                        barkodVar = false;
+                    }
+                } catch (Exception e) {
+                    Log.w(TAG, "cihaz bilgisi okunamadı", e);
                 }
-            } catch (Exception e) {
-                Log.w(TAG, "cihaz bilgisi okunamadı", e);
-            }
-            gucUygula();
-            pilOku();
-            dinleyici.durumDegisti();
+                try {
+                    com.nordicid.nurapi.NurRespReaderInfo ri = api.getReaderInfo();
+                    okuyucuBilgi = "seri " + ri.serial + ", yazılım " + ri.swVersion + ", bölge " + api.getSetupRegionId();
+                } catch (Exception ignored) { }
+                gucUygula();
+                pilOku();
+                dinleyici.durumDegisti();
+            }).start();
         }
 
         public void disconnectedEvent() {
@@ -423,7 +448,8 @@ public class NurOkuyucu {
         }
 
         public void IOChangeEvent(NurEventIOChange e) {
-            if (e.source != TETIK) return;
+            if (e.source != TETIK) { Log.i(TAG, "IO kaynağı " + e.source + " yön " + e.direction); return; }
+            if (yaziliyor) return;
             if (arkaplan) {
                 // Ekran kapalı / uygulama arkada: okumadan önce uygulama öne gelir, okuma orada başlar
                 if (e.direction == 1) {
@@ -449,6 +475,8 @@ public class NurOkuyucu {
                     }
                 }
             } catch (Exception ex) {
+                // Barkod okuması başlayamadıysa kilit kalmasın
+                barkodOkunuyor = false;
                 Log.w(TAG, "tetik işlenemedi", ex);
             }
         }

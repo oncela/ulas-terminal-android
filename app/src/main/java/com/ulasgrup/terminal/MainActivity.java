@@ -40,6 +40,28 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
     private PermissionRequest bekleyenKameraIstegi;
     private boolean guvenli = false;
     private AcilisEkrani acilis;
+
+    /**
+     * Kaldığı yerden devam: son açık sayfa (sistem içi, 12 saatten yeni) saklanır; uygulama yeniden açılınca
+     * (ekran kapanıp Android uygulamayı kapatmışsa, bağlantı gelince) ana ekran yerine oraya dönülür.
+     */
+    private String acilisAdresi() {
+        android.content.SharedPreferences t = getSharedPreferences("ulas_sayfa", MODE_PRIVATE);
+        String son = t.getString("adres", null);
+        long zaman = t.getLong("zaman", 0);
+        if (son != null && son.startsWith("https://" + ALAN + "/") && !son.contains("/login") && !son.contains("/logout")
+            && System.currentTimeMillis() - zaman < 12 * 3600 * 1000L) return son;
+        return ADRES;
+    }
+
+    private void sayfaKaydet() {
+        try {
+            String u = web.getUrl();
+            if (u != null && u.startsWith("https://" + ALAN + "/") && !u.contains("/login")) {
+                getSharedPreferences("ulas_sayfa", MODE_PRIVATE).edit().putString("adres", u).putLong("zaman", System.currentTimeMillis()).apply();
+            }
+        } catch (Exception ignored) { }
+    }
     private static final long ARKAPLAN_SURE = 30 * 60 * 1000L;
     /** 30 dk tetiğe basılmadı: okuyucu bırakılır, "hazır" bildirimi kalkar (pil) */
     private final Runnable arkaplanBitir = () -> {
@@ -74,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
     private final Runnable yenidenDene = new Runnable() {
         @Override public void run() {
             if (!hataSayfasi) return;
-            web.loadUrl(ADRES);
+            web.loadUrl(acilisAdresi());
             zamanlayici.postDelayed(this, 8000);
         }
     };
@@ -170,6 +192,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
 
             @Override
             public void onPageFinished(WebView v, String url) {
+                if (url != null && url.contains("/login")) getSharedPreferences("ulas_sayfa", MODE_PRIVATE).edit().remove("adres").apply();
                 if (url != null && url.startsWith("https://" + ALAN)) hataSayfasi = false;
                 durumDegisti();
                 if (acilis != null) { acilis.kapat(); acilis = null; }
@@ -204,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
                 okuyucu = null;
             }
         }
-        web.loadUrl(ADRES);
+        web.loadUrl(acilisAdresi());
         tetikleAcildiysa(getIntent());
         sesHazirla();
         if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(this, "android.permission.POST_NOTIFICATIONS") != PackageManager.PERMISSION_GRANTED) {
@@ -303,6 +326,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
             o.put("guc", okuyucu != null ? okuyucu.getGuc() : "orta");
             o.put("uyandir", okuyucu != null && okuyucu.isUyandir());
             o.put("tts", sesDurum);
+            if (okuyucu != null) o.put("okuyucuBilgi", okuyucu.getOkuyucuBilgi());
             if (okuyucu != null) {
                 o.put("tetikSon", okuyucu.getSonArkaTetik());
                 o.put("tetikSayi", okuyucu.getArkaTetikSayisi());
@@ -435,6 +459,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
         // Kilit ekranının üstünde gösterme yalnız tetikle açılış içindir; arkaya geçince geri alınır
         if (Build.VERSION.SDK_INT >= 27) { setShowWhenLocked(false); setTurnScreenOn(false); }
         else getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+        sayfaKaydet();
         if (okuyucu != null) {
             boolean bekle = okuyucu.arkadaBekle();
             okuyucu.onPause();
