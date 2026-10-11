@@ -322,6 +322,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
                 okuyucu.bulBasla(o.optString("onek", ""), s);
             } catch (Exception ignored) { }
         }
+        @JavascriptInterface public void geriBildirim(boolean ses, boolean titresim) { if (okuyucu != null) okuyucu.setGeriBildirim(ses, titresim); }
         @JavascriptInterface public void okutmaEkrani(boolean a) { if (okuyucu != null) okuyucu.setOkutmaEkrani(a); }
         /** Sesli yönlendirme: Android'in Türkçe sesi */
         @JavascriptInterface public void konus(String metin) {

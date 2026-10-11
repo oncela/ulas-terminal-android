@@ -74,6 +74,13 @@ public class NurOkuyucu {
     private volatile Set<String> bulEpcler = new HashSet<>();
     private volatile String bulOncekiMod = null;
     private volatile boolean arkaplan = false;
+
+    /** Cihaz ayarları: okuyucunun kendi bipi ve titreşimi de "Ses" / "Titreşim" ayarına uyar */
+    private boolean sesAcik() { return tercihler().getBoolean("ses", true); }
+    private boolean titresimAcik() { return tercihler().getBoolean("titresim", true); }
+    public void setGeriBildirim(boolean ses, boolean titresim) { tercihler().edit().putBoolean("ses", ses).putBoolean("titresim", titresim).apply(); }
+    private void sesVer(int ms) { try { if (sesAcik()) acc.beepAsync(ms); } catch (Exception ignored) { } }
+    private void titret(int ms) { try { if (titresimAcik() && acc.getConfig().hasVibrator()) acc.vibrate(ms); } catch (Exception ignored) { } }
     /** Sayfa okutma ekranında mı (ürün bul, sayım, toplama…): yalnız o zaman arka planda tetik beklenir */
     private volatile boolean okutmaEkrani = false;
 
@@ -200,8 +207,8 @@ public class NurOkuyucu {
     public void sonuc(boolean hata) {
         if (!bagli || !hata) return;
         try {
-            acc.beepAsync(350);
-            if (acc.getConfig().hasVibrator()) acc.vibrate(250);
+            sesVer(350);
+            titret(250);
         } catch (Exception ignored) { }
     }
 
@@ -249,10 +256,10 @@ public class NurOkuyucu {
                 byte[] mevcut = en.getEpc();
                 eski = NurApi.byteArrayToHexString(mevcut);
                 api.writeEpcByEpc(mevcut, mevcut.length, yeni.length, yeni);
-                try { acc.beepAsync(120); } catch (Exception ignored) { }
+                sesVer(120);
                 dinleyici.yazmaSonucu(true, yeniEpc, eski, null);
             } catch (Exception e) {
-                try { acc.beepAsync(400); } catch (Exception ignored) { }
+                sesVer(400);
                 dinleyici.yazmaSonucu(false, yeniEpc, eski, e.getMessage() != null ? e.getMessage() : e.toString());
             } finally {
                 try { api.clearIdBuffer(); } catch (Exception ignored) { }
@@ -284,7 +291,7 @@ public class NurOkuyucu {
     }
 
     public void bip(int ms) {
-        try { if (bagli && acc.isSupported()) acc.beepAsync(ms); } catch (Exception ignored) { }
+        if (bagli && acc.isSupported()) sesVer(ms);
     }
 
     /** Ekrandaki "okut" düğmesi için: tetik tuşu gibi tek okuma */
@@ -348,7 +355,8 @@ public class NurOkuyucu {
         public void onBarcodeResult(AccBarcodeResult r) {
             barkodOkunuyor = false;
             if (r.status == NurApiErrors.NUR_SUCCESS && r.strBarcode != null && r.strBarcode.trim().length() > 0) {
-                try { acc.beepAsync(60); if (acc.getConfig().hasVibrator()) acc.vibrate(80); } catch (Exception ignored) { }
+                sesVer(60);
+                titret(80);
                 dinleyici.okundu(r.strBarcode.trim(), "barkod", 0);
             }
         }
@@ -439,7 +447,7 @@ public class NurOkuyucu {
                     }
                     rfidSayac = depo.size();
                 }
-                acc.beepAsync(20);
+                sesVer(20);
             } catch (Exception ex) {
                 Log.w(TAG, "envanter işlenemedi", ex);
             }
