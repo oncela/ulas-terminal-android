@@ -79,6 +79,12 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
         }
     };
     private final android.os.Handler zamanlayici = new android.os.Handler(android.os.Looper.getMainLooper());
+    private final Runnable bekciDongusu = new Runnable() {
+        @Override public void run() {
+            if (okuyucu != null) okuyucu.bekci();
+            zamanlayici.postDelayed(this, 10000);
+        }
+    };
     private final Runnable pilDongusu = new Runnable() {
         @Override public void run() {
             if (okuyucu != null) {
@@ -222,9 +228,21 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
 
     @Override
     public void tetikArkaplanda() {
+        // Önce ekran doğrudan açılır (kilitliyken tam ekran bildirim tek başına her cihazda ekranı yakmıyor)
+        try {
+            android.os.PowerManager pm = (android.os.PowerManager) getSystemService(POWER_SERVICE);
+            @SuppressWarnings("deprecation")
+            android.os.PowerManager.WakeLock wl = pm.newWakeLock(android.os.PowerManager.SCREEN_BRIGHT_WAKE_LOCK
+                | android.os.PowerManager.ACQUIRE_CAUSES_WAKEUP | android.os.PowerManager.ON_AFTER_RELEASE, "UlasTerminal:tetik");
+            wl.acquire(4000);
+        } catch (Exception ignored) { }
         runOnUiThread(() -> {
             zamanlayici.removeCallbacks(arkaplanBitir);
             try { HazirServis.uyandir(this); } catch (Exception ignored) { }
+            // Ekran açıldıysa ve kilit yoksa doğrudan öne gelmeyi de dene (bildirim kayarsa)
+            try {
+                startActivity(new Intent(this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP).putExtra("tetik", true));
+            } catch (Exception ignored) { }
         });
     }
 
@@ -234,6 +252,11 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
         i.removeExtra("tetik");
         if (Build.VERSION.SDK_INT >= 27) { setShowWhenLocked(true); setTurnScreenOn(true); }
         else getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+        // Şifresiz kilit ekranı kaldırılır (şifreliyse uygulama kilidin üstünde gösterilir)
+        try {
+            android.app.KeyguardManager km = (android.app.KeyguardManager) getSystemService(KEYGUARD_SERVICE);
+            if (Build.VERSION.SDK_INT >= 26 && km != null && km.isKeyguardLocked() && !km.isKeyguardSecure()) km.requestDismissKeyguard(this, null);
+        } catch (Exception ignored) { }
         try { ((android.app.NotificationManager) getSystemService(NOTIFICATION_SERVICE)).cancel(HazirServis.NO_TETIK); } catch (Exception ignored) { }
         // Barkod modunda uyanınca tek okuma başlar (tetik bırakılmış olabilir); RFID'de tetik basılı tutulunca taranır
         zamanlayici.postDelayed(() -> { if (okuyucu != null && "barkod".equals(okuyucu.getMod())) okuyucu.tekOkuma(); }, 700);
@@ -280,6 +303,12 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
             o.put("guc", okuyucu != null ? okuyucu.getGuc() : "orta");
             o.put("uyandir", okuyucu != null && okuyucu.isUyandir());
             o.put("tts", sesDurum);
+            if (okuyucu != null) {
+                o.put("tetikSon", okuyucu.getSonArkaTetik());
+                o.put("tetikSayi", okuyucu.getArkaTetikSayisi());
+                o.put("deneme", okuyucu.getYenidenDeneme());
+                o.put("okuyucuTuru", okuyucu.getSpecTuru());
+            }
             o.put("pil", okuyucu != null ? okuyucu.getPilYuzde() : -1);
             o.put("sarj", okuyucu != null && okuyucu.isPilSarj());
             return o.toString();
@@ -396,6 +425,8 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
         web.onResume();
         zamanlayici.removeCallbacks(pilDongusu);
         zamanlayici.postDelayed(pilDongusu, 3000);
+        zamanlayici.removeCallbacks(bekciDongusu);
+        zamanlayici.postDelayed(bekciDongusu, 12000);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
     }
 
@@ -414,6 +445,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
             }
         }
         zamanlayici.removeCallbacks(pilDongusu);
+        zamanlayici.removeCallbacks(bekciDongusu);
         web.onPause();
         CookieManager.getInstance().flush();
         super.onPause();

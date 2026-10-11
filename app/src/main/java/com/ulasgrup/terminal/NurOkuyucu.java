@@ -121,6 +121,31 @@ public class NurOkuyucu {
     }
 
     /** Kayıtlı okuyucuya, yoksa Nordic cihazında dahili okuyucuya bağlanır; ikisi de yoksa false (ayarlardan seçilir) */
+    /** Teşhis: son arka plan tetiği, bağlantı denemesi sayısı (sunucuya durum ile gider) */
+    private volatile long sonArkaTetik = 0;
+    private volatile int arkaTetikSayisi = 0;
+    private volatile int yenidenDeneme = 0;
+    public long getSonArkaTetik() { return sonArkaTetik; }
+    public int getArkaTetikSayisi() { return arkaTetikSayisi; }
+    public int getYenidenDeneme() { return yenidenDeneme; }
+    public String getSpecTuru() { String s = tercihler().getString("spec", null); return s == null ? (nordicCihaz() ? "dahili" : "yok") : (s.equals(DAHILI) ? "dahili" : "secilen"); }
+
+    /**
+     * Bağlantı bekçisi (10 sn'de bir, ekran açıkken): bağlı değilse bağlantı yeniden kurulur. Kayıtlı (elle seçilmiş)
+     * okuyucu iki kez tutmazsa Nordic cihazında dahili okuyucuya dönülür — "okuyucu seç" gerekmesin.
+     */
+    public void bekci() {
+        if (bagli || !isSecildi()) { if (bagli) yenidenDeneme = 0; return; }
+        yenidenDeneme++;
+        if (yenidenDeneme >= 2 && nordicCihaz() && !DAHILI.equals(tercihler().getString("spec", DAHILI))) {
+            Log.w(TAG, "kayıtlı okuyucu bağlanmıyor; dahili okuyucuya dönülüyor");
+            tercihler().edit().remove("spec").apply();
+        }
+        birak();
+        baslat();
+        dinleyici.durumDegisti();
+    }
+
     public boolean baslat() {
         String spec = tercihler().getString("spec", null);
         if (spec == null && nordicCihaz()) spec = DAHILI;
@@ -401,7 +426,11 @@ public class NurOkuyucu {
             if (e.source != TETIK) return;
             if (arkaplan) {
                 // Ekran kapalı / uygulama arkada: okumadan önce uygulama öne gelir, okuma orada başlar
-                if (e.direction == 1) dinleyici.tetikArkaplanda();
+                if (e.direction == 1) {
+                    sonArkaTetik = System.currentTimeMillis();
+                    arkaTetikSayisi++;
+                    dinleyici.tetikArkaplanda();
+                }
                 return;
             }
             try {
