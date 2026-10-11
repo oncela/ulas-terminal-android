@@ -326,7 +326,15 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
             o.put("guc", okuyucu != null ? okuyucu.getGuc() : "orta");
             o.put("uyandir", okuyucu != null && okuyucu.isUyandir());
             o.put("tts", sesDurum);
-            if (okuyucu != null) o.put("okuyucuBilgi", okuyucu.getOkuyucuBilgi());
+            if (okuyucu != null) {
+                o.put("okuyucuBilgi", okuyucu.getOkuyucuBilgi());
+                o.put("okuyucuSeri", okuyucu.getOkuyucuSeri());
+                o.put("okuyucuYazilim", okuyucu.getOkuyucuYazilim());
+                o.put("bolge", okuyucu.getBolgeAd());
+                o.put("bolgeId", okuyucu.getBolgeId());
+                o.put("filtre", okuyucu.isFiltre());
+                o.put("filtreHatasi", okuyucu.isFiltreHatasi());
+            }
             if (okuyucu != null) {
                 o.put("tetikSon", okuyucu.getSonArkaTetik());
                 o.put("tetikSayi", okuyucu.getArkaTetikSayisi());
@@ -375,6 +383,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
                 okuyucu.bulBasla(o.optString("onek", ""), s);
             } catch (Exception ignored) { }
         }
+        @JavascriptInterface public void filtre(boolean a) { if (okuyucu != null) okuyucu.setFiltre(a); }
         @JavascriptInterface public void geriBildirim(boolean ses, boolean titresim) { if (okuyucu != null) okuyucu.setGeriBildirim(ses, titresim); }
         @JavascriptInterface public void okutmaEkrani(boolean a) { if (okuyucu != null) okuyucu.setOkutmaEkrani(a); }
         /** Sesli yönlendirme: Android'in Türkçe sesi */

@@ -28,6 +28,8 @@ import com.nordicid.nurapi.NurEventTagTrackingChange;
 import com.nordicid.nurapi.NurEventTagTrackingData;
 import com.nordicid.nurapi.NurEventTraceTag;
 import com.nordicid.nurapi.NurEventTriggeredRead;
+import com.nordicid.nurapi.NurInventoryExtended;
+import com.nordicid.nurapi.NurInventoryExtendedFilter;
 import com.nordicid.nurapi.NurTag;
 import com.nordicid.nurapi.NurTagStorage;
 
@@ -71,6 +73,12 @@ public class NurOkuyucu {
     /** Teşhis: okuyucu seri no / yazılım sürümü / bölge */
     private volatile String okuyucuBilgi = "";
     public String getOkuyucuBilgi() { return okuyucuBilgi; }
+    private volatile String okuyucuSeri = "", okuyucuYazilim = "", bolgeAd = "";
+    private volatile int bolgeId = -1;
+    public String getOkuyucuSeri() { return okuyucuSeri; }
+    public String getOkuyucuYazilim() { return okuyucuYazilim; }
+    public String getBolgeAd() { return bolgeAd; }
+    public int getBolgeId() { return bolgeId; }
     private volatile int pilYuzde = -1;
     private volatile long baslangic = 0;
     private volatile boolean pilSarj = false;
@@ -345,7 +353,7 @@ public class NurOkuyucu {
     }
 
     public void durdur() {
-        try { if (api.isInventoryStreamRunning()) api.stopInventoryStream(); } catch (Exception ignored) { }
+        akisDurdur();
         try { if (barkodOkunuyor) acc.cancelBarcodeAsync(); } catch (Exception ignored) { }
         barkodOkunuyor = false;
         tetikBasili = false;
@@ -396,8 +404,50 @@ public class NurOkuyucu {
         NurTagStorage d = api.getStorage();
         synchronized (d) { d.clear(); }
         api.clearIdBuffer();
+        akisBaslat();
+    }
+
+    /**
+     * RFID taraması. "Yalnız Ulaş etiketleri" açıksa Gen2 Select ile yalnız sistemin yazdığı etiketler (EPC 554C01…)
+     * cevap verir (ambalaj / başka firma etiketleri okunmaz, yoğun rafta daha hızlı). Komut desteklenmezse normal taramaya dönülür.
+     */
+    private volatile boolean genisletilmis = false;
+    private void akisBaslat() throws Exception {
+        if (isFiltre() && !"bul".equals(mod)) {
+            try {
+                NurInventoryExtended inv = new NurInventoryExtended();
+                inv.inventorySelState = 3; // NUR_SELSTATE_SL: yalnız seçilen (SL) etiketler
+                inv.session = 0;
+                inv.inventoryTarget = 0;
+                NurInventoryExtendedFilter f = new NurInventoryExtendedFilter();
+                f.action = NurInventoryExtendedFilter.FILTER_ACTION_0; // eşleşen SL'i ayarlar, eşleşmeyen kaldırır
+                f.targetSession = NurInventoryExtendedFilter.SESSION_SL;
+                f.bank = NurInventoryExtendedFilter.BANK_EPC;
+                f.address = 32; // EPC belleğinde CRC + PC'den sonra (bit)
+                f.maskdata = NurApi.hexStringToByteArray("554C01");
+                f.maskBitLength = 24;
+                f.truncate = false;
+                api.startInventoryExtendedStream(inv, new NurInventoryExtendedFilter[]{f});
+                genisletilmis = true;
+                return;
+            } catch (Exception e) {
+                Log.w(TAG, "filtreli tarama desteklenmedi; normal taramaya dönülüyor", e);
+                filtreHatasi = true;
+            }
+        }
+        genisletilmis = false;
         api.startInventoryStream();
     }
+
+    private void akisDurdur() {
+        try { if (api.isInventoryExtendedStreamRunning()) api.stopInventoryExtendedStream(); } catch (Exception ignored) { }
+        try { if (api.isInventoryStreamRunning()) api.stopInventoryStream(); } catch (Exception ignored) { }
+    }
+
+    private volatile boolean filtreHatasi = false;
+    public boolean isFiltre() { return tercihler().getBoolean("filtre", false); }
+    public boolean isFiltreHatasi() { return filtreHatasi; }
+    public void setFiltre(boolean a) { tercihler().edit().putBoolean("filtre", a).apply(); filtreHatasi = false; }
 
     private final AccBarcodeResultListener barkodSonucu = new AccBarcodeResultListener() {
         public void onBarcodeResult(AccBarcodeResult r) {
@@ -431,7 +481,11 @@ public class NurOkuyucu {
                 }
                 try {
                     com.nordicid.nurapi.NurRespReaderInfo ri = api.getReaderInfo();
-                    okuyucuBilgi = "seri " + ri.serial + ", yazılım " + ri.swVersion + ", bölge " + api.getSetupRegionId();
+                    okuyucuSeri = ri.serial != null ? ri.serial : "";
+                    okuyucuYazilim = ri.swVersion != null ? ri.swVersion : "";
+                    bolgeId = api.getSetupRegionId();
+                    try { bolgeAd = api.getRegionInfo().name; } catch (Exception ignored) { }
+                    okuyucuBilgi = "seri " + okuyucuSeri + ", yazılım " + okuyucuYazilim + ", bölge " + bolgeAd + " (" + bolgeId + ")";
                 } catch (Exception ignored) { }
                 gucUygula();
                 pilOku();
@@ -467,7 +521,7 @@ public class NurOkuyucu {
                 } else {
                     tetikBasili = false;
                     if ("rfid".equals(mod) || "bul".equals(mod)) {
-                        if (api.isInventoryStreamRunning()) api.stopInventoryStream();
+                        akisDurdur();
                     } else if (barkodVar && !barkodOkunuyor) {
                         acc.imagerAIM(false);
                         barkodOkunuyor = true;
@@ -485,7 +539,7 @@ public class NurOkuyucu {
             try {
                 if (e.stopped) {
                     // Akış ~20 sn sonra kendiliğinden durur; tetik basılıysa sürdürülür
-                    if (tetikBasili && ("rfid".equals(mod) || "bul".equals(mod))) api.startInventoryStream();
+                    if (tetikBasili && ("rfid".equals(mod) || "bul".equals(mod))) akisBaslat();
                     return;
                 }
                 if ("bul".equals(mod)) {
@@ -525,7 +579,8 @@ public class NurOkuyucu {
         public void programmingProgressEvent(NurEventProgrammingProgress e) { }
         public void nxpEasAlarmEvent(NurEventNxpAlarm e) { }
         public void logEvent(int level, String txt) { }
-        public void inventoryExtendedStreamEvent(NurEventInventory e) { }
+        /** Filtreli tarama olayları normal tarama ile aynı işlenir */
+        public void inventoryExtendedStreamEvent(NurEventInventory e) { inventoryStreamEvent(e); }
         public void frequencyHopEvent(NurEventFrequencyHop e) { }
         public void epcEnumEvent(NurEventEpcEnum e) { }
         public void deviceSearchEvent(NurEventDeviceInfo e) { }
