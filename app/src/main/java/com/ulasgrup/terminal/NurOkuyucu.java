@@ -48,6 +48,7 @@ public class NurOkuyucu {
         void okundu(String kod, String tur, int rssi);
         void durumDegisti();
         void yazmaSonucu(boolean ok, String epc, String eski, String hata);
+        void bulSinyal(String epc, int rssi);
     }
 
     private final Context ctx;
@@ -66,6 +67,10 @@ public class NurOkuyucu {
     private volatile long baslangic = 0;
     private volatile boolean pilSarj = false;
     private final Set<String> rfidGorulen = new HashSet<>();
+    /** Etiket bul: aranan ürünün EPC öneki (sistemin yazdığı etiketler) ve bağlı etiketler */
+    private volatile String bulOnek = null;
+    private volatile Set<String> bulEpcler = new HashSet<>();
+    private volatile String bulOncekiMod = null;
 
     public NurOkuyucu(Context ctx, Dinleyici dinleyici) {
         this.ctx = ctx.getApplicationContext();
@@ -237,6 +242,28 @@ public class NurOkuyucu {
         }).start();
     }
 
+    /** Etiket bul modunu açar: tetik basılıyken sürekli tarar, yalnız aranan etiketlerin sinyal gücünü bildirir */
+    public void bulBasla(String onek, Set<String> epcler) {
+        bulOnek = onek == null || onek.isEmpty() ? null : onek.toUpperCase();
+        bulEpcler = epcler;
+        if (!"bul".equals(mod)) bulOncekiMod = mod;
+        mod = "bul";
+        dinleyici.durumDegisti();
+    }
+
+    public void bulDurdur() {
+        durdur();
+        bulOnek = null;
+        bulEpcler = new HashSet<>();
+        mod = bulOncekiMod != null ? bulOncekiMod : "barkod";
+        bulOncekiMod = null;
+        dinleyici.durumDegisti();
+    }
+
+    private boolean aranan(String epc) {
+        return (bulOnek != null && epc.startsWith(bulOnek)) || bulEpcler.contains(epc);
+    }
+
     public void bip(int ms) {
         try { if (bagli && acc.isSupported()) acc.beepAsync(ms); } catch (Exception ignored) { }
     }
@@ -286,6 +313,9 @@ public class NurOkuyucu {
         // Her tetikte yeniden: aynı etiketin iki kez sayılmasını sayfa önler (ürün bulda aynı etiket tekrar okunabilsin)
         rfidGorulen.clear();
         rfidSayac = 0;
+        // Önceki basıştan kalan etiketler yeniden gönderilmesin (ürün bulda artık orada olmayan etiket seçilmesin)
+        NurTagStorage d = api.getStorage();
+        synchronized (d) { d.clear(); }
         api.clearIdBuffer();
         api.startInventoryStream();
     }
@@ -330,11 +360,11 @@ public class NurOkuyucu {
             try {
                 if (e.direction == 1) {
                     tetikBasili = true;
-                    if ("rfid".equals(mod)) rfidBaslat();
+                    if ("rfid".equals(mod) || "bul".equals(mod)) rfidBaslat();
                     else if (barkodVar) acc.imagerAIM(true);
                 } else {
                     tetikBasili = false;
-                    if ("rfid".equals(mod)) {
+                    if ("rfid".equals(mod) || "bul".equals(mod)) {
                         if (api.isInventoryStreamRunning()) api.stopInventoryStream();
                     } else if (barkodVar && !barkodOkunuyor) {
                         acc.imagerAIM(false);
@@ -351,7 +381,23 @@ public class NurOkuyucu {
             try {
                 if (e.stopped) {
                     // Akış ~20 sn sonra kendiliğinden durur; tetik basılıysa sürdürülür
-                    if (tetikBasili && "rfid".equals(mod)) api.startInventoryStream();
+                    if (tetikBasili && ("rfid".equals(mod) || "bul".equals(mod))) api.startInventoryStream();
+                    return;
+                }
+                if ("bul".equals(mod)) {
+                    // Her turda depo boşaltılır ki aynı etiketin güncel sinyali gelsin; yalnız aranan etiketler bildirilir
+                    NurTagStorage d = api.getStorage();
+                    String enEpc = null; int enRssi = -999;
+                    synchronized (d) {
+                        for (int i = 0; i < d.size(); i++) {
+                            NurTag t = d.get(i);
+                            String epc = NurApi.byteArrayToHexString(t.getEpc());
+                            if (aranan(epc) && t.getRssi() > enRssi) { enRssi = t.getRssi(); enEpc = epc; }
+                        }
+                        d.clear();
+                    }
+                    api.clearIdBuffer();
+                    if (enEpc != null) dinleyici.bulSinyal(enEpc, enRssi);
                     return;
                 }
                 if (e.tagsAdded <= 0) return;

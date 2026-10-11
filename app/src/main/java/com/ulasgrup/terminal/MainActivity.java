@@ -187,6 +187,12 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
     }
 
     @Override
+    public void bulSinyal(String epc, int rssi) {
+        final String js = "window.dispatchEvent(new CustomEvent('ulas-rfid-bul',{detail:{epc:" + JSONObject.quote(epc) + ",rssi:" + rssi + "}}))";
+        runOnUiThread(() -> web.evaluateJavascript(js, null));
+    }
+
+    @Override
     public void yazmaSonucu(boolean ok, String epc, String eski, String hata) {
         final String js = "window.dispatchEvent(new CustomEvent('ulas-rfid-yazma',{detail:{ok:" + ok + ",epc:" + JSONObject.quote(epc) + ",eski:" + JSONObject.quote(eski == null ? "" : eski)
             + ",hata:" + (hata == null ? "null" : JSONObject.quote(hata)) + "}}))";
@@ -244,6 +250,18 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
                 else getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             });
         }
+        /** Etiket bul: hedef = {"onek":"554C0100000123","epcler":["E280..."]} */
+        @JavascriptInterface public void bulBasla(String hedef) {
+            if (okuyucu == null) return;
+            try {
+                JSONObject o = new JSONObject(hedef);
+                java.util.Set<String> s = new java.util.HashSet<>();
+                org.json.JSONArray a = o.optJSONArray("epcler");
+                if (a != null) for (int i = 0; i < a.length(); i++) s.add(a.getString(i).toUpperCase());
+                okuyucu.bulBasla(o.optString("onek", ""), s);
+            } catch (Exception ignored) { }
+        }
+        @JavascriptInterface public void bulDurdur() { if (okuyucu != null) okuyucu.bulDurdur(); }
         @JavascriptInterface public void tasarruf(boolean a) { if (okuyucu != null) okuyucu.setTasarruf(a); }
         @JavascriptInterface public void yenidenBaglan() {
             runOnUiThread(() -> {
