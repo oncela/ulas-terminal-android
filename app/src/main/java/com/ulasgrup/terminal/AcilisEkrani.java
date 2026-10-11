@@ -56,12 +56,20 @@ public class AcilisEkrani extends FrameLayout {
         alt.setGravity(Gravity.CENTER);
         alt.setLetterSpacing(0.15f);
 
+        TextView surum = new TextView(c);
+        surum.setText("Sürüm " + BuildConfig.VERSION_NAME);
+        surum.setTextColor(Color.rgb(107, 114, 128));
+        surum.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        surum.setGravity(Gravity.CENTER);
+        surum.setPadding(0, dp(6), 0, 0);
+
         LinearLayout orta = new LinearLayout(c);
         orta.setOrientation(LinearLayout.VERTICAL);
         orta.setGravity(Gravity.CENTER_HORIZONTAL);
         orta.addView(logoAlani, new LinearLayout.LayoutParams(alan, alan));
         orta.addView(ad);
         orta.addView(alt);
+        orta.addView(surum);
         addView(orta, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.CENTER));
 
         TextView imza = new TextView(c);
@@ -89,10 +97,11 @@ public class AcilisEkrani extends FrameLayout {
             s.start();
         }).start();
         orta.animate().translationY(0).setDuration(500).start();
-        ad.setAlpha(0f); alt.setAlpha(0f); imza.setAlpha(0f);
+        ad.setAlpha(0f); alt.setAlpha(0f); imza.setAlpha(0f); surum.setAlpha(0f);
         ad.animate().alpha(1f).setStartDelay(250).setDuration(400).start();
         alt.animate().alpha(1f).setStartDelay(400).setDuration(400).start();
         imza.animate().alpha(1f).setStartDelay(600).setDuration(500).start();
+        surum.animate().alpha(1f).setStartDelay(500).setDuration(400).start();
 
         postDelayed(this::kapat, 10000);
     }
