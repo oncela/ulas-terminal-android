@@ -122,6 +122,15 @@ public class NurOkuyucu {
         return true;
     }
 
+    /** Uzaktan komut: bağlantıyı bırakıp yeniden kurar (okuyucu takıldığında) */
+    public void yenidenBaglan() {
+        durdur();
+        birak();
+        bagli = false;
+        dinleyici.durumDegisti();
+        baslat();
+    }
+
     public void unut() {
         tercihler().edit().remove("spec").apply();
         birak();

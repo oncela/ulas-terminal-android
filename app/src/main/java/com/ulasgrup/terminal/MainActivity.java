@@ -245,6 +245,14 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
             });
         }
         @JavascriptInterface public void tasarruf(boolean a) { if (okuyucu != null) okuyucu.setTasarruf(a); }
+        @JavascriptInterface public void yenidenBaglan() {
+            runOnUiThread(() -> {
+                try {
+                    if (okuyucu == null) { okuyucu = new NurOkuyucu(MainActivity.this, MainActivity.this); okuyucu.baslat(); }
+                    else okuyucu.yenidenBaglan();
+                } catch (Throwable e) { okuyucu = null; }
+            });
+        }
         @JavascriptInterface public void yaz(String epc) {
             if (okuyucu != null && epc != null && epc.matches("^[0-9A-Fa-f]{24,64}$")) okuyucu.yaz(epc);
             else yazmaSonucu(false, epc, "", "Geçersiz istek");
