@@ -213,7 +213,8 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
         if (Build.VERSION.SDK_INT >= 27) { setShowWhenLocked(true); setTurnScreenOn(true); }
         else getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
         try { ((android.app.NotificationManager) getSystemService(NOTIFICATION_SERVICE)).cancel(HazirServis.NO_TETIK); } catch (Exception ignored) { }
-        zamanlayici.postDelayed(() -> { if (okuyucu != null) okuyucu.tekOkuma(); }, 700);
+        // Barkod modunda uyanınca tek okuma başlar (tetik bırakılmış olabilir); RFID'de tetik basılı tutulunca taranır
+        zamanlayici.postDelayed(() -> { if (okuyucu != null && "barkod".equals(okuyucu.getMod())) okuyucu.tekOkuma(); }, 700);
     }
 
     @Override
