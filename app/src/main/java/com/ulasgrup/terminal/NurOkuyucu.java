@@ -74,6 +74,7 @@ public class NurOkuyucu {
     private volatile Set<String> bulEpcler = new HashSet<>();
     private volatile String bulOncekiMod = null;
     private volatile boolean arkaplan = false;
+    private volatile boolean arkadaTutuldu = false;
 
     /** Cihaz ayarları: okuyucunun kendi bipi ve titreşimi de "Ses" / "Titreşim" ayarına uyar */
     private boolean sesAcik() { return tercihler().getBoolean("ses", true); }
@@ -91,6 +92,7 @@ public class NurOkuyucu {
     /** Uzun süre (30 dk) tetiğe basılmadı: arka plandaki bağlantı bırakılır */
     public void arkaplaniBirak() {
         arkaplan = false;
+        arkadaTutuldu = false;
         try { if (baglanti != null) baglanti.onPause(); } catch (Exception ignored) { }
     }
 
@@ -320,11 +322,17 @@ public class NurOkuyucu {
         baglanti = null;
     }
 
-    public void onResume() { arkaplan = false; try { if (baglanti != null) baglanti.onResume(); } catch (Exception ignored) { } }
+    public void onResume() {
+        arkaplan = false;
+        // Bağlantı arka planda açık tutulduysa dokunulmaz (yeniden kurmak okuyucuyu birkaç saniye koparıyordu)
+        if (arkadaTutuldu && bagli) { arkadaTutuldu = false; return; }
+        arkadaTutuldu = false;
+        try { if (baglanti != null) baglanti.onResume(); } catch (Exception ignored) { }
+    }
     public void onPause() {
         durdur();
         // "Tetikle aç" açıkken bağlantı arka planda da açık kalır (tetik olayı gelsin)
-        if (arkadaBekle()) { arkaplan = true; return; }
+        if (arkadaBekle()) { arkaplan = true; arkadaTutuldu = true; return; }
         try { if (baglanti != null) baglanti.onPause(); } catch (Exception ignored) { }
     }
 
@@ -383,6 +391,8 @@ public class NurOkuyucu {
 
         public void disconnectedEvent() {
             bagli = false;
+            // "Bağlanılamadı" uyarısı kopuştan 12 sn sonra (kısa kopmalarda uyarı çıkmasın)
+            baslangic = System.currentTimeMillis();
             barkodVar = false;
             dinleyici.durumDegisti();
         }
