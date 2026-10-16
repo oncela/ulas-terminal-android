@@ -42,18 +42,28 @@ jobs:
           { echo "== imza"; $BT/apksigner verify --verbose --print-certs "$APK" | grep -E "Verified|Signer #1 certificate (SHA-256|DN)";
             echo "== izinler"; $BT/aapt dump permissions "$APK" | sed -n '2,100p';
             echo "== surum"; $BT/aapt dump badging "$APK" | head -1; } > dogrulama.txt 2>&1
+          EKRAN=$(ls ekran/build/outputs/apk/release/*.apk)
+          { echo "== ekran imza"; $BT/apksigner verify --verbose --print-certs "$EKRAN" | grep -E "Verified|Signer #1 certificate (SHA-256|DN)";
+            echo "== ekran izinler"; $BT/aapt dump permissions "$EKRAN" | sed -n '2,100p';
+            echo "== ekran surum"; $BT/aapt dump badging "$EKRAN" | head -1; } >> dogrulama.txt 2>&1
           cat dogrulama.txt
           $BT/apksigner verify "$APK"
+          $BT/apksigner verify "$EKRAN"
       - uses: actions/upload-artifact@v4
         with:
           name: UlasTerminal
-          path: app/build/outputs/apk/release/*.apk
+          path: |
+            app/build/outputs/apk/release/*.apk
+            ekran/build/outputs/apk/release/*.apk
       # Sunucu APK'yı buradan kendisi alır (depo gizli; sunucu yalnız git ile okuyabilir)
       - name: APK dalına koy
         if: github.ref == 'refs/heads/main'
         run: |
           mkdir dagitim && cp app/build/outputs/apk/release/*.apk dagitim/UlasTerminal.apk && cp dogrulama.txt dagitim/
           grep -oE "versionName ['\"][^'\"]+" app/build.gradle | grep -oE '[0-9][0-9A-Za-z.-]*' > dagitim/surum.txt
+          # Ulaş Ekran (TV kutusu) ayrı dosya
+          cp ekran/build/outputs/apk/release/*.apk dagitim/UlasEkran.apk
+          grep -oE "versionName ['\"][^'\"]+" ekran/build.gradle | grep -oE '[0-9][0-9A-Za-z.-]*' > dagitim/ekran-surum.txt
           cd dagitim
           git init -q -b apk
           git config user.name "github-actions" && git config user.email "actions@github.com"

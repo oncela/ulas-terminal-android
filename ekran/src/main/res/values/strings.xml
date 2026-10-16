@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Ulaş Ekran</string>
+    <string name="menu">Ulaş Ekran</string>
+    <string name="yenile">Yenile</string>
+    <string name="yeniden_eslestir">Başka ekrana bağla (yeni kod)</string>
+    <string name="ayarlar">Android ayarları</string>
+    <string name="kapat_uygulama">Uygulamayı kapat (bakım)</string>
+    <string name="iptal">Vazgeç</string>
+    <string name="baglanti_yok">Sunucuya ulaşılamıyor</string>
+    <string name="baglanti_aciklama">İnternet bağlantısı gelince ekran kendiliğinden açılacak.</string>
+</resources>

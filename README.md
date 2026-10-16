@@ -13,11 +13,11 @@ Nordic ID el terminalleri (HH83, HH85, EXA) için uygulama. Ulaş Grup sistemini
 2. İlk açılışta okuyucu seçme ekranı çıkar: HH85'te **Integrated reader** / tümleşik okuyucuyu seçin. Seçim hatırlanır.
 3. term1 / term2 / term3 hesabıyla girin.
 
-## Ekran modu (banko / depo TV kutusu)
-TV kutusunda (Android TV ya da dokunmatiksiz cihaz) uygulama el terminali yerine **bilgi ekranı** olarak açılır:
-eşleştirme kodu gösterir (`/ekran-eslestir`), kod panelde **Bilgi ekranları → TV'ye bağla** ile girilir, ekran adresi
-cihaza kaydedilir. Ekran hep açık, tam ekran; cihaz açılınca kendiliğinden başlar (ana ekran olarak seçilebilir).
-Kumandada Geri / Menü: Yenile, başka ekrana bağla, ekran modundan çık, Android ayarları.
+## Ulaş Ekran (ayrı uygulama, `ekran/` modülü)
+Banko / depo TV kutusu için ayrı APK (`com.ulasgrup.ekran`): yalnız bilgi ekranı; okuyucu, kamera, Bluetooth yok.
+Kurulum: TV'de `https://sistem.ulasgrup.com.tr/ekran.apk` (girişsiz). İlk açılışta eşleştirme kodu çıkar; kod panelde
+**Bilgi ekranları → TV'ye bağla** ile girilir. Ekran hep açık, tam ekran; cihaz açılınca başlar (ana ekran seçilebilir).
+Kumandada Geri / Menü: yenile, başka ekrana bağla, ayarlar.
 
 ## Derleme
 GitHub Actions her gönderimde derler (`.github/workflows/apk.yml`). APK: Actions → son çalıştırma → **UlasTerminal**.

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Uyarlanabilir ikon: zemin kenara kadar dolu, telefon kendi şeklini (daire / yuvarlak kare) uygular -->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@mipmap/ic_launcher_zemin" />
+    <foreground android:drawable="@android:color/transparent" />
+</adaptive-icon>
