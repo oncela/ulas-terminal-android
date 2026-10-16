@@ -8,4 +8,11 @@
     <string name="indirilemedi">İndirilemedi.</string>
     <string name="hazir_bildirim">Okuyucu hazır: tetiğe basınca açılır</string>
     <string name="tetik_bildirim">Okutma için açılıyor…</string>
+    <string name="ekran_menu">Bilgi ekranı</string>
+    <string name="ekran_yenile">Yenile</string>
+    <string name="ekran_yeniden_eslestir">Başka ekrana bağla (yeni kod)</string>
+    <string name="ekran_modundan_cik">Ekran modundan çık</string>
+    <string name="ekran_ayarlar">Android ayarları</string>
+    <string name="ekran_kapat">Kapat</string>
+    <string name="ekran_cik_onay">Bu cihaz el terminali gibi açılacak ve kayıtlı ekran adresi silinecek. Devam edilsin mi?</string>
 </resources>

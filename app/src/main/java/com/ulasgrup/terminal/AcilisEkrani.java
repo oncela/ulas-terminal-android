@@ -50,7 +50,7 @@ public class AcilisEkrani extends FrameLayout {
         ad.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
         ad.setGravity(Gravity.CENTER);
         TextView alt = new TextView(c);
-        alt.setText("El Terminali");
+        alt.setText(EkranModu.acik(c) ? "Bilgi Ekranı" : "El Terminali");
         alt.setTextColor(KIRMIZI);
         alt.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         alt.setGravity(Gravity.CENTER);

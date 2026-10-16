@@ -40,12 +40,23 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
     private PermissionRequest bekleyenKameraIstegi;
     private boolean guvenli = false;
     private AcilisEkrani acilis;
+    /** Ekran modu: banko / depo TV'si (okuyucu yok, tam ekran, ekran hep açık, kumandada menü) */
+    private boolean ekran = false;
+    private static final long EKRAN_YENILE = 6 * 3600 * 1000L;
+    /** Ekran sayfası 6 saatte bir baştan yüklenir (sistem güncellemeleri ekrana da gelsin) */
+    private final Runnable ekranYenile = new Runnable() {
+        @Override public void run() {
+            if (ekran && !hataSayfasi && web != null) web.loadUrl(EkranModu.acilis(MainActivity.this));
+            zamanlayici.postDelayed(this, EKRAN_YENILE);
+        }
+    };
 
     /**
      * Kaldığı yerden devam: son açık sayfa (sistem içi, 12 saatten yeni) saklanır; uygulama yeniden açılınca
      * (ekran kapanıp Android uygulamayı kapatmışsa, bağlantı gelince) ana ekran yerine oraya dönülür.
      */
     private String acilisAdresi() {
+        if (ekran) return EkranModu.acilis(this);
         android.content.SharedPreferences t = getSharedPreferences("ulas_sayfa", MODE_PRIVATE);
         String son = t.getString("adres", null);
         long zaman = t.getLong("zaman", 0);
@@ -55,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
     }
 
     private void sayfaKaydet() {
+        if (ekran) return;
         try {
             String u = web.getUrl();
             if (u != null && u.startsWith("https://" + ALAN + "/") && !u.contains("/login")) {
@@ -120,7 +132,11 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Ekran sürekli açık tutulmaz (pil): okutma ekranları çalışılırken UlasCihaz.ekranAcik(true) ile ister, boşta bırakır
+        // Ekran sürekli açık tutulmaz (pil): okutma ekranları çalışılırken UlasCihaz.ekranAcik(true) ile ister, boşta bırakır.
+        // Ekran modunda (TV) ekran hep açık, yön ekranınki; el terminalinde dikey.
+        ekran = EkranModu.acik(this);
+        setRequestedOrientation(ekran ? android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED : android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        if (ekran) getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         web = new WebView(this);
         android.widget.FrameLayout kok = new android.widget.FrameLayout(this);
@@ -190,6 +206,15 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
                 }
             }
 
+            /** Ekran silindi ya da yeni adres verildi (404): eşleştirmeye dönülür */
+            @Override
+            public void onReceivedHttpError(WebView v, WebResourceRequest r, android.webkit.WebResourceResponse y) {
+                if (ekran && r.isForMainFrame() && y != null && y.getStatusCode() == 404 && r.getUrl().getPath() != null && r.getUrl().getPath().startsWith("/ekran/ek_")) {
+                    EkranModu.unut(MainActivity.this);
+                    v.loadUrl(EkranModu.ESLESTIR);
+                }
+            }
+
             @Override
             public void onPageFinished(WebView v, String url) {
                 if (url != null && url.contains("/login")) getSharedPreferences("ulas_sayfa", MODE_PRIVATE).edit().remove("adres").apply();
@@ -216,8 +241,8 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
         // Önceki açılış çöktüyse kaydı gönderilir ve okuyucu bu sefer başlatılmaz (ekran yine açılır)
         guvenli = Uygulama.oncekiHatayiGonder(this);
         // Okuyucu seçme ekranı (NurDeviceListActivity) Bluetooth tarayıcısının hazırlanmış olmasını bekler
-        try { com.nordicid.nurapi.BleScanner.init(this); } catch (Throwable ignored) { }
-        if (!guvenli) {
+        if (!ekran) { try { com.nordicid.nurapi.BleScanner.init(this); } catch (Throwable ignored) { } }
+        if (!guvenli && !ekran) {
             try {
                 okuyucu = new NurOkuyucu(this, this);
                 // Nordic cihazında dahili okuyucuya kendiliğinden bağlanır; olmazsa ayarlardan "Okuyucu seç"
@@ -228,9 +253,9 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
             }
         }
         web.loadUrl(acilisAdresi());
-        tetikleAcildiysa(getIntent());
-        sesHazirla();
-        if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(this, "android.permission.POST_NOTIFICATIONS") != PackageManager.PERMISSION_GRANTED) {
+        if (ekran) zamanlayici.postDelayed(ekranYenile, EKRAN_YENILE);
+        else { tetikleAcildiysa(getIntent()); sesHazirla(); }
+        if (!ekran && Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(this, "android.permission.POST_NOTIFICATIONS") != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{"android.permission.POST_NOTIFICATIONS"}, 8);
         }
         try {
@@ -425,6 +450,56 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
             else yazmaSonucu(false, epc, "", "Geçersiz istek");
         }
         @JavascriptInterface public void sonuc(boolean hata) { if (okuyucu != null) okuyucu.sonuc(hata); }
+        /** Eşleştirme sayfası: ekran adresi geldi → cihaza kaydedilir, ekran modunda açılır */
+        @JavascriptInterface public void ekranModu(String adres) {
+            if (!EkranModu.gecerli(adres)) return;
+            EkranModu.kaydet(MainActivity.this, adres);
+            runOnUiThread(() -> {
+                if (!ekran) { ekran = true; recreate(); return; }
+                web.loadUrl(adres);
+            });
+        }
+        @JavascriptInterface public boolean ekranModundaMi() { return ekran; }
+    }
+
+    /** Kumandada Geri / Menü: ekran modunda uygulama kapanmaz, küçük bir menü açılır */
+    private void ekranMenusu() {
+        String[] secenekler = {getString(R.string.ekran_yenile), getString(R.string.ekran_yeniden_eslestir), getString(R.string.ekran_modundan_cik), getString(R.string.ekran_ayarlar), getString(R.string.ekran_kapat)};
+        new android.app.AlertDialog.Builder(this)
+            .setTitle(R.string.ekran_menu)
+            .setItems(secenekler, (d, i) -> {
+                if (i == 0) web.reload();
+                else if (i == 1) { EkranModu.unut(this); web.loadUrl(EkranModu.ESLESTIR); }
+                else if (i == 2) {
+                    new android.app.AlertDialog.Builder(this).setMessage(R.string.ekran_cik_onay)
+                        .setPositiveButton(R.string.ekran_modundan_cik, (d2, w) -> { EkranModu.kapat(this); ekran = false; recreate(); })
+                        .setNegativeButton(android.R.string.cancel, null).show();
+                }
+                else if (i == 3) { try { startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS)); } catch (Exception ignored) { } }
+            })
+            .show();
+    }
+
+    @Override
+    public boolean onKeyDown(int kod, android.view.KeyEvent e) {
+        if (ekran && (kod == android.view.KeyEvent.KEYCODE_MENU || kod == android.view.KeyEvent.KEYCODE_SETTINGS || kod == android.view.KeyEvent.KEYCODE_INFO)) {
+            ekranMenusu();
+            return true;
+        }
+        return super.onKeyDown(kod, e);
+    }
+
+    /** Ekran modunda sistem çubukları gizli (TV'de tam ekran) */
+    private void tamEkran() {
+        if (!ekran) { getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE); return; }
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean odak) {
+        super.onWindowFocusChanged(odak);
+        if (odak) tamEkran();
     }
 
     @Override
@@ -445,6 +520,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
 
     @Override
     public void onBackPressed() {
+        if (ekran) { ekranMenusu(); return; }
         if (web.canGoBack()) web.goBack();
         else super.onBackPressed();
     }
@@ -460,7 +536,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
         zamanlayici.postDelayed(pilDongusu, 3000);
         zamanlayici.removeCallbacks(bekciDongusu);
         zamanlayici.postDelayed(bekciDongusu, 12000);
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+        tamEkran();
     }
 
     @Override
@@ -490,6 +566,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
         if (okuyucu != null) okuyucu.kapat();
         try { stopService(new Intent(this, HazirServis.class)); } catch (Exception ignored) { }
         if (ses != null) { try { ses.shutdown(); } catch (Exception ignored) { } }
+        zamanlayici.removeCallbacksAndMessages(null);
         web.destroy();
         super.onDestroy();
     }
