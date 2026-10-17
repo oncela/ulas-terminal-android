@@ -1,0 +1,24 @@
+INSTRUMENTATION_STATUS: class=com.ulasgrup.terminal.UygulamaTesti
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stream=
+com.ulasgrup.terminal.UygulamaTesti:
+INSTRUMENTATION_STATUS: test=acilir_sayfa_yuklenir_kopru_calisir_ve_cokmez
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.ulasgrup.terminal.UygulamaTesti
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=acilir_sayfa_yuklenir_kopru_calisir_ve_cokmez
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_RESULT: stream=
+
+Time: 11.946
+
+OK (1 test)
+
+
+INSTRUMENTATION_CODE: -1
+

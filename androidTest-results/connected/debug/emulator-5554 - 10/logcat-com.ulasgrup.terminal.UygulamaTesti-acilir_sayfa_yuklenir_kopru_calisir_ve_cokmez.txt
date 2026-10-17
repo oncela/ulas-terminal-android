@@ -1,0 +1,278 @@
+10-17 17:13:43.962  3542  3561 I TestRunner: started: acilir_sayfa_yuklenir_kopru_calisir_ve_cokmez(com.ulasgrup.terminal.UygulamaTesti)
+10-17 17:13:43.968  3542  3561 W Settings: Setting always_finish_activities has moved from android.provider.Settings.System to android.provider.Settings.Global, returning read-only value.
+10-17 17:13:43.979  1907  1928 E system_server: Invalid ID 0x00000000.
+10-17 17:13:43.981  1907  2667 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:43.983  1907  2667 I chatty  : uid=1000(system) Binder:1907_9 identical 38 lines
+10-17 17:13:43.983  1907  2667 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:43.988  3542  3542 W ActivityThread: handleWindowVisibility: no activity for token android.os.BinderProxy@2b11803
+10-17 17:13:43.996  1731  1798 E SurfaceFlinger: ro.sf.lcd_density must be defined as a build property
+10-17 17:13:43.997  1731  1798 E SurfaceFlinger: ro.sf.lcd_density must be defined as a build property
+10-17 17:13:43.998  3542  3565 D libEGL  : Emulator has host GPU support, qemu.gles is set to 1.
+10-17 17:13:43.999  3542  3565 W libc    : Unable to set property "qemu.gles" to "1": connection failed; errno=13 (Permission denied)
+10-17 17:13:44.006  1698  1728 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 823296
+10-17 17:13:44.028  1731  1793 D HostConnection: HostConnection::get() New Host Connection established 0x756fe79a2f40, tid 1793
+10-17 17:13:44.028  1731  1793 D HostConnection: HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_sync_buffer_data ANDROID_EMU_vulkan_async_qsri ANDROID_EMU_hwc_color_transform GL_OES_EGL_image_external_essl3 GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_3_0
+10-17 17:13:44.030  1907  1928 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:44.030  1907  1928 I chatty  : uid=1000(system) android.anim identical 8 lines
+10-17 17:13:44.030  1907  1928 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:44.077  3542  3565 D libEGL  : loaded /vendor/lib64/egl/libEGL_emulation.so
+10-17 17:13:44.077  3542  3565 D libEGL  : loaded /vendor/lib64/egl/libGLESv1_CM_emulation.so
+10-17 17:13:44.078  3542  3565 D libEGL  : loaded /vendor/lib64/egl/libGLESv2_emulation.so
+10-17 17:13:44.085  3542  3542 D AppCompatDelegate: Checking for metadata for AppLocalesMetadataHolderService : Service not found
+10-17 17:13:44.093  3542  3542 D LifecycleMonitor: Lifecycle status change: com.ulasgrup.terminal.MainActivity@2af1298 in: PRE_ON_CREATE
+10-17 17:13:44.093  3542  3542 V ActivityScenario: Activity lifecycle changed event received but ignored because the reported transition was not ON_CREATE while the last known transition was PRE_ON_CREATE
+10-17 17:13:44.104  2620  2782 D EGL_emulation: eglMakeCurrent: 0x7d95b81ac2a0: ver 3 0 (tinfo 0x7d95b81c1540)
+10-17 17:13:44.114  1907  2770 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:44.114  1907  2770 I chatty  : uid=1000(system) Binder:1907_A identical 8 lines
+10-17 17:13:44.114  1907  2770 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:44.120  3542  3542 I WebViewFactory: Loading com.android.webview version 74.0.3729.185 (code 373018565)
+10-17 17:13:44.121  3542  3542 I asgrup.termina: The ClassLoaderContext is a special shared library.
+10-17 17:13:44.131  3542  3542 I cr_LibraryLoader: Time to load native libraries: 1 ms (timestamps 173-174)
+10-17 17:13:44.141  3542  3542 I chromium: [INFO:library_loader_hooks.cc(50)] Chromium logging enabled: level = 0, default verbosity = 0
+10-17 17:13:44.141  3542  3542 I cr_LibraryLoader: Expected native library version number "74.0.3729.185", actual native library version number "74.0.3729.185"
+10-17 17:13:44.145  1664  1664 D Zygote  : Forked child process 3574
+10-17 17:13:44.148  3574  3574 W webview_servic: Unexpected CPU variant for X86 using defaults: x86_64
+10-17 17:13:44.149  3542  3580 W cr_ChildProcLH: Create a new ChildConnectionAllocator with package name = com.android.webview, sandboxed = true
+10-17 17:13:44.150  3542  3542 I cr_BrowserStartup: Initializing chromium process, singleProcess=false
+10-17 17:13:44.153  3542  3580 W asgrup.termina: Accessing hidden method Landroid/content/Context;->bindServiceAsUser(Landroid/content/Intent;Landroid/content/ServiceConnection;ILandroid/os/Handler;Landroid/os/UserHandle;)Z (greylist, reflection, allowed)
+10-17 17:13:44.157  2241  2241 D Zygote  : Forked child process 3592
+10-17 17:13:44.160  3592  3592 W ProcessService: Unexpected CPU variant for X86 using defaults: x86_64
+10-17 17:13:44.161  3542  3542 E chromium: [ERROR:filesystem_posix.cc(89)] stat /data/user/0/com.ulasgrup.terminal/cache/WebView/Crashpad: No such file or directory (2)
+10-17 17:13:44.161  3542  3542 E chromium: [ERROR:filesystem_posix.cc(62)] mkdir /data/user/0/com.ulasgrup.terminal/cache/WebView/Crashpad: No such file or directory (2)
+10-17 17:13:44.168  3574  3574 I webview_servic: The ClassLoaderContext is a special shared library.
+10-17 17:13:44.171  3574  3574 I LoadedApk: No resource references to update in package com.android.webview
+10-17 17:13:44.186  3592  3592 I LoadedApk: No resource references to update in package com.android.webview
+10-17 17:13:44.186  3592  3592 I cr_ChildProcessService: Creating new ChildProcessService pid=3592
+10-17 17:13:44.219  1907  2015 D UntrustedWifiNetworkFactory: got request NetworkRequest [ TRACK_DEFAULT id=16, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10116] ] with score 60 and serial -1
+10-17 17:13:44.219  1907  2015 D WifiNetworkFactory: got request NetworkRequest [ TRACK_DEFAULT id=16, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10116] ] with score 60 and serial -1
+10-17 17:13:44.220  2303  2303 D PhoneSwitcherNetworkRequstListener: got request NetworkRequest [ TRACK_DEFAULT id=16, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10116] ] with score 60 and serial -1
+10-17 17:13:44.226  3542  3542 W asgrup.termina: Accessing hidden method Landroid/view/textclassifier/logging/SmartSelectionEventTracker;-><init>(Landroid/content/Context;I)V (greylist, reflection, allowed)
+10-17 17:13:44.226  3542  3542 W asgrup.termina: Accessing hidden method Landroid/view/textclassifier/logging/SmartSelectionEventTracker;->logEvent(Landroid/view/textclassifier/logging/SmartSelectionEventTracker$SelectionEvent;)V (greylist, reflection, allowed)
+10-17 17:13:44.226  3542  3542 W asgrup.termina: Accessing hidden method Landroid/view/textclassifier/logging/SmartSelectionEventTracker$SelectionEvent;->selectionStarted(I)Landroid/view/textclassifier/logging/SmartSelectionEventTracker$SelectionEvent; (greylist, reflection, allowed)
+10-17 17:13:44.226  3542  3542 W asgrup.termina: Accessing hidden method Landroid/view/textclassifier/logging/SmartSelectionEventTracker$SelectionEvent;->selectionModified(II)Landroid/view/textclassifier/logging/SmartSelectionEventTracker$SelectionEvent; (greylist, reflection, allowed)
+10-17 17:13:44.226  3542  3542 W asgrup.termina: Accessing hidden method Landroid/view/textclassifier/logging/SmartSelectionEventTracker$SelectionEvent;->selectionModified(IILandroid/view/textclassifier/TextClassification;)Landroid/view/textclassifier/logging/SmartSelectionEventTracker$SelectionEvent; (greylist, reflection, allowed)
+10-17 17:13:44.226  3542  3542 W asgrup.termina: Accessing hidden method Landroid/view/textclassifier/logging/SmartSelectionEventTracker$SelectionEvent;->selectionModified(IILandroid/view/textclassifier/TextSelection;)Landroid/view/textclassifier/logging/SmartSelectionEventTracker$SelectionEvent; (greylist, reflection, allowed)
+10-17 17:13:44.226  3542  3542 W asgrup.termina: Accessing hidden method Landroid/view/textclassifier/logging/SmartSelectionEventTracker$SelectionEvent;->selectionAction(III)Landroid/view/textclassifier/logging/SmartSelectionEventTracker$SelectionEvent; (greylist, reflection, allowed)
+10-17 17:13:44.226  3542  3542 W asgrup.termina: Accessing hidden method Landroid/view/textclassifier/logging/SmartSelectionEventTracker$SelectionEvent;->selectionAction(IIILandroid/view/textclassifier/TextClassification;)Landroid/view/textclassifier/logging/SmartSelectionEventTracker$SelectionEvent; (greylist, reflection, allowed)
+10-17 17:13:44.249  3542  3542 W asgrup.termina: Accessing hidden method Landroid/view/View;->computeFitSystemWindows(Landroid/graphics/Rect;Landroid/graphics/Rect;)Z (greylist, reflection, allowed)
+10-17 17:13:44.249  3542  3542 W asgrup.termina: Accessing hidden method Landroid/view/ViewGroup;->makeOptionalFitsSystemWindows()V (greylist, reflection, allowed)
+10-17 17:13:44.256  3542  3542 I BleScanner: BleScanner() mOwner com.ulasgrup.terminal.MainActivity@2af1298
+10-17 17:13:44.283  3542  3619 E BluetoothAdapter: Bluetooth binder is null
+10-17 17:13:44.294  3542  3633 D HostConnection: HostConnection::get() New Host Connection established 0x7d956b3579a0, tid 3633
+10-17 17:13:44.294  3542  3633 D HostConnection: HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_sync_buffer_data ANDROID_EMU_vulkan_async_qsri ANDROID_EMU_hwc_color_transform GL_OES_EGL_image_external_essl3 GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_3_0
+10-17 17:13:44.298  3542  3633 D EGL_emulation: eglCreateContext: 0x7d956b357b80: maj 3 min 0 rcv 3
+10-17 17:13:44.298  3542  3617 E cr_SBApiBridge: Failed to init handler: Attempt to invoke virtual method 'java.lang.reflect.Constructor java.lang.Class.getDeclaredConstructor(java.lang.Class[])' on a null object reference
+10-17 17:13:44.299  3542  3633 D EGL_emulation: eglMakeCurrent: 0x7d956b357b80: ver 3 0 (tinfo 0x7d956b3308a0)
+10-17 17:13:44.306  1907  2015 D UntrustedWifiNetworkFactory: got request NetworkRequest [ TRACK_DEFAULT id=18, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10116] ] with score 60 and serial -1
+10-17 17:13:44.306  1907  2015 D WifiNetworkFactory: got request NetworkRequest [ TRACK_DEFAULT id=18, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10116] ] with score 60 and serial -1
+10-17 17:13:44.307  2303  2303 D PhoneSwitcherNetworkRequstListener: got request NetworkRequest [ TRACK_DEFAULT id=18, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10116] ] with score 60 and serial -1
+10-17 17:13:44.322  3542  3633 I VideoCapabilities: Unsupported profile 4 for video/mp4v-es
+10-17 17:13:44.323  3542  3633 W cr_MediaCodecUtil: HW encoder for video/avc is not available on this device.
+10-17 17:13:44.327  3592  3614 I cr_LibraryLoader: Time to load native libraries: 0 ms (timestamps 370-370)
+10-17 17:13:44.337  3592  3614 I chromium: [INFO:library_loader_hooks.cc(50)] Chromium logging enabled: level = 0, default verbosity = 0
+10-17 17:13:44.337  3592  3614 I cr_LibraryLoader: Expected native library version number "74.0.3729.185", actual native library version number "74.0.3729.185"
+10-17 17:13:44.346  3542  3542 D LifecycleMonitor: Lifecycle status change: com.ulasgrup.terminal.MainActivity@2af1298 in: CREATED
+10-17 17:13:44.346  3542  3542 V ActivityScenario: Update currentActivityStage to CREATED, currentActivity=com.ulasgrup.terminal.MainActivity@2af1298
+10-17 17:13:44.348  3542  3542 D LifecycleMonitor: Lifecycle status change: com.ulasgrup.terminal.MainActivity@2af1298 in: STARTED
+10-17 17:13:44.348  3542  3542 V ActivityScenario: Update currentActivityStage to STARTED, currentActivity=com.ulasgrup.terminal.MainActivity@2af1298
+10-17 17:13:44.350  3542  3542 D LifecycleMonitor: Lifecycle status change: com.ulasgrup.terminal.MainActivity@2af1298 in: RESUMED
+10-17 17:13:44.350  3542  3542 V ActivityScenario: Update currentActivityStage to RESUMED, currentActivity=com.ulasgrup.terminal.MainActivity@2af1298
+10-17 17:13:44.360  1907  2015 D UntrustedWifiNetworkFactory: got request NetworkRequest [ TRACK_DEFAULT id=19, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10116] ] with score 60 and serial -1
+10-17 17:13:44.360  1907  2015 D WifiNetworkFactory: got request NetworkRequest [ TRACK_DEFAULT id=19, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10116] ] with score 60 and serial -1
+10-17 17:13:44.361  2303  2303 D PhoneSwitcherNetworkRequstListener: got request NetworkRequest [ TRACK_DEFAULT id=19, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10116] ] with score 60 and serial -1
+10-17 17:13:44.405  3542  3564 D HostConnection: HostConnection::get() New Host Connection established 0x7d956b317080, tid 3564
+10-17 17:13:44.405  3542  3564 D HostConnection: HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_sync_buffer_data ANDROID_EMU_vulkan_async_qsri ANDROID_EMU_hwc_color_transform GL_OES_EGL_image_external_essl3 GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_3_0
+10-17 17:13:44.406  3542  3564 D EGL_emulation: eglCreateContext: 0x7d956b3171c0: maj 3 min 0 rcv 3
+10-17 17:13:44.407  3542  3564 D EGL_emulation: eglMakeCurrent: 0x7d956b3171c0: ver 3 0 (tinfo 0x7d95b8618e00)
+10-17 17:13:44.413  1698  1728 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 823296
+10-17 17:13:44.414  1568  1568 I hwservicemanager: getTransport: Cannot find entry android.hardware.graphics.mapper@3.0::IMapper/default in either framework or device manifest.
+10-17 17:13:44.414  3542  3564 W Gralloc3: mapper 3.x is not supported
+10-17 17:13:44.415  3542  3564 D HostConnection: createUnique: call
+10-17 17:13:44.416  3542  3564 D HostConnection: HostConnection::get() New Host Connection established 0x7d956b317a80, tid 3564
+10-17 17:13:44.416  3542  3564 D HostConnection: HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_sync_buffer_data ANDROID_EMU_vulkan_async_qsri ANDROID_EMU_hwc_color_transform GL_OES_EGL_image_external_essl3 GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_3_0
+10-17 17:13:44.416  3542  3564 D eglCodecCommon: allocate: Ask for block of size 0x1000
+10-17 17:13:44.416  3542  3564 D eglCodecCommon: allocate: ioctl allocate returned offset 0x3fff28000 size 0x2000
+10-17 17:13:44.417  1698  1728 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 823296
+10-17 17:13:44.420  3542  3564 D EGL_emulation: eglMakeCurrent: 0x7d956b3171c0: ver 3 0 (tinfo 0x7d95b8618e00)
+10-17 17:13:44.427  1698  1728 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 823296
+10-17 17:13:44.433  3542  3564 E eglCodecCommon: glUtilsParamSize: unknow param 0x000088ef
+10-17 17:13:44.433  3542  3564 E eglCodecCommon: glUtilsParamSize: unknow param 0x000088ef
+10-17 17:13:44.470  3574  3646 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+10-17 17:13:44.614  3542  3633 D EGL_emulation: eglCreateContext: 0x7d956b618ac0: maj 3 min 0 rcv 3
+10-17 17:13:44.616  3542  3633 D EGL_emulation: eglMakeCurrent: 0x7d956b618ac0: ver 3 0 (tinfo 0x7d956b3308a0)
+10-17 17:13:44.711  1662  3637 E ResolverController: No valid NAT64 prefix (101, <unspecified>/0)
+10-17 17:13:44.778  3542  3633 E eglCodecCommon: glUtilsParamSize: unknow param 0x000088ef
+10-17 17:13:44.778  3542  3633 E eglCodecCommon: glUtilsParamSize: unknow param 0x000088ef
+10-17 17:13:44.793  3574  3646 W webview_servic: Verification of long com.android.org.conscrypt.Java7ExtendedSSLSession.getLastAccessedTime() took 100.809ms
+10-17 17:13:44.783  1907  1932 I ActivityTaskManager: Displayed com.ulasgrup.terminal/.MainActivity: +806ms
+10-17 17:13:44.839  3542  3633 E eglCodecCommon: glUtilsParamSize: unknow param 0x000088ef
+10-17 17:13:44.839  3542  3633 E eglCodecCommon: glUtilsParamSize: unknow param 0x000088ef
+10-17 17:13:44.911  3574  3646 I cr_VariationsSeedFetch: Fetched first run seed in 513 ms
+10-17 17:13:45.022  3542  3624 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+10-17 17:13:45.307  3048  3155 I Dialer  : VvmTaskExecutor - executing task com.android.voicemail.impl.ActivationTask@4f3d3dc
+10-17 17:13:45.307  3048  3155 I Dialer  : PreOMigrationHandler - ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, ***, UserHandle{0} already migrated
+10-17 17:13:45.332  2884  3391 I VoicemailNotifier: receivers for android.intent.action.PROVIDER_CHANGED :[]
+10-17 17:13:45.333  3048  3155 I Dialer  : VvmActivationTask - VVM content provider configured - vvm_type_cvvm
+10-17 17:13:45.333  3048  3155 I Dialer  : OmtpVvmCarrierCfgHlpr - OmtpEvent:CONFIG_ACTIVATING
+10-17 17:13:45.346  2884  3391 I VoicemailNotifier: receivers for android.intent.action.PROVIDER_CHANGED :[]
+10-17 17:13:45.349  2303  2318 I LocationAccessPolicy: Allowing com.android.dialer fine because it doesn't target API 29 yet. Please fix this app. Called from getServiceStateForSubscriber
+10-17 17:13:45.350  2303  2318 I LocationAccessPolicy: Allowing com.android.dialer coarse because it doesn't target API 29 yet. Please fix this app. Called from getServiceStateForSubscriber
+10-17 17:13:45.954  3542  3542 I chromium: [INFO:CONSOLE(2)] "Uncaught SyntaxError: Unexpected token .", source: https://sistem.ulasgrup.com.tr/build/assets/app-lH9FptgN.js (2)
+10-17 17:13:49.810  1907  1928 E system_server: Invalid ID 0x00000000.
+10-17 17:13:49.811  1907  2667 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:49.811  1907  2667 I chatty  : uid=1000(system) Binder:1907_9 identical 8 lines
+10-17 17:13:49.811  1907  2667 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:49.821  1698  1728 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 823296
+10-17 17:13:49.824  3542  3542 D LifecycleMonitor: Lifecycle status change: com.ulasgrup.terminal.MainActivity@2af1298 in: PAUSED
+10-17 17:13:49.824  3542  3542 V ActivityScenario: Update currentActivityStage to PAUSED, currentActivity=com.ulasgrup.terminal.MainActivity@2af1298
+10-17 17:13:49.826  1663  1663 D Zygote  : Forked child process 3659
+10-17 17:13:49.829  3659  3659 I p.terminal.tes: Late-enabling -Xcheck:jni
+10-17 17:13:49.834  3659  3659 E p.terminal.tes: Unknown bits set in runtime_flags: 0x8000
+10-17 17:13:49.835  3659  3659 W p.terminal.tes: Unexpected CPU variant for X86 using defaults: x86_64
+10-17 17:13:49.843  1907  2667 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:49.845  1907  2667 I chatty  : uid=1000(system) Binder:1907_9 identical 28 lines
+10-17 17:13:49.845  1907  2667 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:49.850  3659  3659 I p.terminal.tes: The ClassLoaderContext is a special shared library.
+10-17 17:13:49.852  1907  1928 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:49.852  1907  1928 I chatty  : uid=1000(system) android.anim identical 1 line
+10-17 17:13:49.852  1907  1928 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:49.853  3659  3659 I p.terminal.tes: The ClassLoaderContext is a special shared library.
+10-17 17:13:49.852  1907  1928 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:49.854  1907  1928 I chatty  : uid=1000(system) android.anim identical 5 lines
+10-17 17:13:49.854  1907  1928 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:49.854  1731  1793 D PermissionCache: checking android.permission.READ_FRAME_BUFFER for uid=1000 => granted (102 us)
+10-17 17:13:49.854  1698  1728 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 823296
+10-17 17:13:49.949  3542  3564 D EGL_emulation: eglMakeCurrent: 0x7d956b3171c0: ver 3 0 (tinfo 0x7d95b8618e00)
+10-17 17:13:49.953  1731  2498 E SurfaceFlinger: ro.sf.lcd_density must be defined as a build property
+10-17 17:13:49.953  1731  2498 E SurfaceFlinger: ro.sf.lcd_density must be defined as a build property
+10-17 17:13:49.964  3659  3678 D libEGL  : Emulator has host GPU support, qemu.gles is set to 1.
+10-17 17:13:49.970  3659  3678 W libc    : Unable to set property "qemu.gles" to "1": connection failed; errno=13 (Permission denied)
+10-17 17:13:49.972  3659  3678 D libEGL  : loaded /vendor/lib64/egl/libEGL_emulation.so
+10-17 17:13:49.973  3659  3678 D libEGL  : loaded /vendor/lib64/egl/libGLESv1_CM_emulation.so
+10-17 17:13:49.974  3659  3678 D libEGL  : loaded /vendor/lib64/egl/libGLESv2_emulation.so
+10-17 17:13:49.989  1731  1793 E SurfaceFlinger: ro.sf.lcd_density must be defined as a build property
+10-17 17:13:49.989  1731  1793 E SurfaceFlinger: ro.sf.lcd_density must be defined as a build property
+10-17 17:13:49.989  1907  3680 D libEGL  : Emulator has host GPU support, qemu.gles is set to 1.
+10-17 17:13:49.950  3659  3659 W RenderThread: type=1400 audit(0.0:43): avc: denied { write } for name="property_service" dev="tmpfs" ino=6844 scontext=u:r:untrusted_app:s0:c117,c256,c512,c768 tcontext=u:object_r:property_socket:s0 tclass=sock_file permissive=0 app=com.ulasgrup.terminal.test
+10-17 17:13:50.001  1907  3680 W libc    : Unable to set property "qemu.gles" to "1": error code: 0x18
+10-17 17:13:50.002  1907  3680 D libEGL  : loaded /vendor/lib64/egl/libEGL_emulation.so
+10-17 17:13:50.002  1907  3680 D libEGL  : loaded /vendor/lib64/egl/libGLESv1_CM_emulation.so
+10-17 17:13:50.003  1907  3680 D libEGL  : loaded /vendor/lib64/egl/libGLESv2_emulation.so
+10-17 17:13:50.008  1907  3680 D HostConnection: HostConnection::get() New Host Connection established 0x7d9561f90100, tid 3680
+10-17 17:13:50.008  1907  3680 D HostConnection: HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_sync_buffer_data ANDROID_EMU_vulkan_async_qsri ANDROID_EMU_hwc_color_transform GL_OES_EGL_image_external_essl3 GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_3_0
+10-17 17:13:50.010  1907  3680 D EGL_emulation: eglCreateContext: 0x7d9561f90240: maj 3 min 0 rcv 3
+10-17 17:13:50.010  1907  3680 D EGL_emulation: eglMakeCurrent: 0x7d9561f90240: ver 3 0 (tinfo 0x7d95b8685d60)
+10-17 17:13:50.025  3659  3677 D HostConnection: HostConnection::get() New Host Connection established 0x7d95b866a400, tid 3677
+10-17 17:13:50.067  3659  3677 D HostConnection: HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_sync_buffer_data ANDROID_EMU_vulkan_async_qsri ANDROID_EMU_hwc_color_transform GL_OES_EGL_image_external_essl3 GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_3_0
+10-17 17:13:50.072  3659  3677 D EGL_emulation: eglCreateContext: 0x7d95b866a5e0: maj 3 min 0 rcv 3
+10-17 17:13:50.073  3659  3677 D EGL_emulation: eglMakeCurrent: 0x7d95b866a5e0: ver 3 0 (tinfo 0x7d95b8618e00)
+10-17 17:13:50.077  1698  1728 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 823296
+10-17 17:13:50.078  1568  1568 I hwservicemanager: getTransport: Cannot find entry android.hardware.graphics.mapper@3.0::IMapper/default in either framework or device manifest.
+10-17 17:13:50.078  3659  3677 W Gralloc3: mapper 3.x is not supported
+10-17 17:13:50.078  3659  3677 D HostConnection: createUnique: call
+10-17 17:13:50.079  3659  3677 D HostConnection: HostConnection::get() New Host Connection established 0x7d95b866a720, tid 3677
+10-17 17:13:50.079  3659  3677 D HostConnection: HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_sync_buffer_data ANDROID_EMU_vulkan_async_qsri ANDROID_EMU_hwc_color_transform GL_OES_EGL_image_external_essl3 GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_3_0
+10-17 17:13:50.079  3659  3677 D eglCodecCommon: allocate: Ask for block of size 0x1000
+10-17 17:13:50.079  3659  3677 D eglCodecCommon: allocate: ioctl allocate returned offset 0x3fff26000 size 0x2000
+10-17 17:13:50.080  1698  1728 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 823296
+10-17 17:13:50.080  1698  1728 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 823296
+10-17 17:13:50.081  3659  3677 D EGL_emulation: eglMakeCurrent: 0x7d95b866a5e0: ver 3 0 (tinfo 0x7d95b8618e00)
+10-17 17:13:50.152  1907  1932 I ActivityTaskManager: Displayed com.ulasgrup.terminal.test/androidx.test.core.app.InstrumentationActivityInvoker$EmptyActivity: +343ms
+10-17 17:13:50.172  3542  3542 D LifecycleMonitor: Lifecycle status change: com.ulasgrup.terminal.MainActivity@2af1298 in: STOPPED
+10-17 17:13:50.172  3542  3542 V ActivityScenario: Update currentActivityStage to STOPPED, currentActivity=com.ulasgrup.terminal.MainActivity@2af1298
+10-17 17:13:51.675  1907  3397 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:51.675  1907  3397 I chatty  : uid=1000(system) Binder:1907_F identical 8 lines
+10-17 17:13:51.675  1907  3397 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:51.679  1907  2667 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:51.679  1907  2667 I chatty  : uid=1000(system) Binder:1907_9 identical 8 lines
+10-17 17:13:51.679  1907  2667 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:51.680  3542  3542 D LifecycleMonitor: Lifecycle status change: com.ulasgrup.terminal.MainActivity@2af1298 in: RESTARTED
+10-17 17:13:51.680  3542  3542 V ActivityScenario: Update currentActivityStage to RESTARTED, currentActivity=com.ulasgrup.terminal.MainActivity@2af1298
+10-17 17:13:51.681  3542  3542 D LifecycleMonitor: Lifecycle status change: com.ulasgrup.terminal.MainActivity@2af1298 in: STARTED
+10-17 17:13:51.681  3542  3542 V ActivityScenario: Update currentActivityStage to STARTED, currentActivity=com.ulasgrup.terminal.MainActivity@2af1298
+10-17 17:13:51.684  3542  3542 D LifecycleMonitor: Lifecycle status change: com.ulasgrup.terminal.MainActivity@2af1298 in: RESUMED
+10-17 17:13:51.684  3542  3542 V ActivityScenario: Update currentActivityStage to RESUMED, currentActivity=com.ulasgrup.terminal.MainActivity@2af1298
+10-17 17:13:51.690  1698  1728 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 823296
+10-17 17:13:51.692  1698  1728 I chatty  : uid=1000(system) HwBinder:1698_1 identical 1 line
+10-17 17:13:51.692  1698  1728 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 823296
+10-17 17:13:51.693  3542  3564 D EGL_emulation: eglMakeCurrent: 0x7d956b3171c0: ver 3 0 (tinfo 0x7d95b8618e00)
+10-17 17:13:51.699  1907  1928 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:51.699  1907  1928 I chatty  : uid=1000(system) android.anim identical 8 lines
+10-17 17:13:51.699  1907  1928 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:51.699  1698  1728 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 823296
+10-17 17:13:51.703  3659  3677 D EGL_emulation: eglMakeCurrent: 0x7d95b866a5e0: ver 3 0 (tinfo 0x7d95b8618e00)
+10-17 17:13:51.707  1907  3680 D HostConnection: HostConnection::get() New Host Connection established 0x7d9561f90100, tid 3680
+10-17 17:13:51.707  1907  3680 D HostConnection: HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_sync_buffer_data ANDROID_EMU_vulkan_async_qsri ANDROID_EMU_hwc_color_transform GL_OES_EGL_image_external_essl3 GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_3_0
+10-17 17:13:51.708  1907  3680 D EGL_emulation: eglCreateContext: 0x7d9561f90240: maj 3 min 0 rcv 3
+10-17 17:13:51.708  1907  3680 D EGL_emulation: eglMakeCurrent: 0x7d9561f90240: ver 3 0 (tinfo 0x7d95b8685d60)
+10-17 17:13:52.687  3542  3542 D LifecycleMonitor: Lifecycle status change: com.ulasgrup.terminal.MainActivity@2af1298 in: PAUSED
+10-17 17:13:52.687  3542  3542 V ActivityScenario: Update currentActivityStage to PAUSED, currentActivity=com.ulasgrup.terminal.MainActivity@2af1298
+10-17 17:13:52.687  3542  3564 D EGL_emulation: eglMakeCurrent: 0x7d956b3171c0: ver 3 0 (tinfo 0x7d95b8618e00)
+10-17 17:13:52.688  3542  3542 D LifecycleMonitor: Lifecycle status change: com.ulasgrup.terminal.MainActivity@2af1298 in: STOPPED
+10-17 17:13:52.688  3542  3542 V ActivityScenario: Update currentActivityStage to STOPPED, currentActivity=com.ulasgrup.terminal.MainActivity@2af1298
+10-17 17:13:52.689  3542  3542 W TextToSpeech: shutdown failed: not bound to TTS engine
+10-17 17:13:52.689  3542  3542 W cr_AwContents: WebView.destroy() called while WebView is still attached to window.
+10-17 17:13:52.695  3542  3542 D LifecycleMonitor: Lifecycle status change: com.ulasgrup.terminal.MainActivity@2af1298 in: DESTROYED
+10-17 17:13:52.695  3542  3542 V ActivityScenario: Update currentActivityStage to DESTROYED, currentActivity=null
+10-17 17:13:52.704  3542  3542 D LifecycleMonitor: Lifecycle status change: com.ulasgrup.terminal.MainActivity@5de15d9 in: PRE_ON_CREATE
+10-17 17:13:52.704  3542  3542 V ActivityScenario: Activity lifecycle changed event received but ignored because the reported transition was not ON_CREATE while the last known transition was DESTROYED
+10-17 17:13:52.728  1907  2015 D UntrustedWifiNetworkFactory: got request NetworkRequest [ TRACK_DEFAULT id=21, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10116] ] with score 60 and serial -1
+10-17 17:13:52.728  1907  2015 D WifiNetworkFactory: got request NetworkRequest [ TRACK_DEFAULT id=21, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10116] ] with score 60 and serial -1
+10-17 17:13:52.728  2303  2303 D PhoneSwitcherNetworkRequstListener: got request NetworkRequest [ TRACK_DEFAULT id=21, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10116] ] with score 60 and serial -1
+10-17 17:13:52.728  3542  3542 D LifecycleMonitor: Lifecycle status change: com.ulasgrup.terminal.MainActivity@5de15d9 in: CREATED
+10-17 17:13:52.728  3542  3542 V ActivityScenario: Update currentActivityStage to CREATED, currentActivity=com.ulasgrup.terminal.MainActivity@5de15d9
+10-17 17:13:52.730  3542  3542 D LifecycleMonitor: Lifecycle status change: com.ulasgrup.terminal.MainActivity@5de15d9 in: STARTED
+10-17 17:13:52.730  3542  3542 V ActivityScenario: Update currentActivityStage to STARTED, currentActivity=com.ulasgrup.terminal.MainActivity@5de15d9
+10-17 17:13:52.731  3542  3542 D LifecycleMonitor: Lifecycle status change: com.ulasgrup.terminal.MainActivity@5de15d9 in: RESUMED
+10-17 17:13:52.731  3542  3542 V ActivityScenario: Update currentActivityStage to RESUMED, currentActivity=com.ulasgrup.terminal.MainActivity@5de15d9
+10-17 17:13:52.743  1698  1728 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 823296
+10-17 17:13:52.745  1698  1728 I chatty  : uid=1000(system) HwBinder:1698_1 identical 1 line
+10-17 17:13:52.745  1698  1728 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 823296
+10-17 17:13:52.746  3542  3564 D EGL_emulation: eglMakeCurrent: 0x7d956b3171c0: ver 3 0 (tinfo 0x7d95b8618e00)
+10-17 17:13:52.753  3542  3564 E eglCodecCommon: glUtilsParamSize: unknow param 0x000088ef
+10-17 17:13:52.754  3542  3564 E eglCodecCommon: glUtilsParamSize: unknow param 0x000088ef
+10-17 17:13:52.793  3542  3633 E eglCodecCommon: glUtilsParamSize: unknow param 0x000088ef
+10-17 17:13:52.794  3542  3633 E eglCodecCommon: glUtilsParamSize: unknow param 0x000088ef
+10-17 17:13:52.828  3542  3633 D EGL_emulation: eglMakeCurrent: 0x7d956b618ac0: ver 3 0 (tinfo 0x7d956b3308a0)
+10-17 17:13:53.615  3542  3542 I chromium: [INFO:CONSOLE(2)] "Uncaught SyntaxError: Unexpected token .", source: https://sistem.ulasgrup.com.tr/build/assets/app-lH9FptgN.js (2)
+10-17 17:13:55.787  1907  3397 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:55.787  1907  3397 I chatty  : uid=1000(system) Binder:1907_F identical 8 lines
+10-17 17:13:55.787  1907  3397 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:55.790  1907  1932 E memtrack: Couldn't load memtrack module
+10-17 17:13:55.790  1907  1932 W android.os.Debug: failed to get memory consumption info: -1
+10-17 17:13:55.792  3542  3542 D LifecycleMonitor: Lifecycle status change: com.ulasgrup.terminal.MainActivity@5de15d9 in: PAUSED
+10-17 17:13:55.793  1907  1932 E memtrack: Couldn't load memtrack module
+10-17 17:13:55.793  1907  1932 W android.os.Debug: failed to get memory consumption info: -1
+10-17 17:13:55.793  3542  3542 V ActivityScenario: Update currentActivityStage to PAUSED, currentActivity=com.ulasgrup.terminal.MainActivity@5de15d9
+10-17 17:13:55.793  1907  3397 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:55.794  1907  3397 I chatty  : uid=1000(system) Binder:1907_F identical 18 lines
+10-17 17:13:55.794  1907  3397 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:55.794  1907  1932 E memtrack: Couldn't load memtrack module
+10-17 17:13:55.794  1907  1932 W android.os.Debug: failed to get memory consumption info: -1
+10-17 17:13:55.795  1907  3397 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:55.795  1907  3397 I chatty  : uid=1000(system) Binder:1907_F identical 8 lines
+10-17 17:13:55.795  1907  3397 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:55.805  1698  1728 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 823296
+10-17 17:13:55.814  1907  3397 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:55.814  1907  3397 I chatty  : uid=1000(system) Binder:1907_F identical 8 lines
+10-17 17:13:55.814  1907  3397 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:55.815  1698  1728 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 823296
+10-17 17:13:55.827  1698  1728 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 823296
+10-17 17:13:55.827  3542  3564 D EGL_emulation: eglMakeCurrent: 0x7d956b3171c0: ver 3 0 (tinfo 0x7d95b8618e00)
+10-17 17:13:55.828  1698  1728 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 823296
+10-17 17:13:55.828  1698  1728 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 823296
+10-17 17:13:55.828  3659  3677 D EGL_emulation: eglMakeCurrent: 0x7d95b866a5e0: ver 3 0 (tinfo 0x7d95b8618e00)
+10-17 17:13:55.832  1907  1922 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:55.832  1907  1922 I chatty  : uid=1000(system) Binder:1907_1 identical 8 lines
+10-17 17:13:55.832  1907  1922 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:55.837  1907  1932 I ActivityTaskManager: Displayed com.ulasgrup.terminal.test/androidx.test.core.app.InstrumentationActivityInvoker$EmptyActivity: +53ms
+10-17 17:13:55.839  1907  2770 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:55.839  1907  2770 I chatty  : uid=1000(system) Binder:1907_A identical 8 lines
+10-17 17:13:55.839  1907  2770 W InputReader: Device has associated, but no associated display id.
+10-17 17:13:55.845  3542  3542 D LifecycleMonitor: Lifecycle status change: com.ulasgrup.terminal.MainActivity@5de15d9 in: STOPPED
+10-17 17:13:55.845  3542  3542 V ActivityScenario: Update currentActivityStage to STOPPED, currentActivity=com.ulasgrup.terminal.MainActivity@5de15d9
+10-17 17:13:55.845  3542  3542 W TextToSpeech: shutdown failed: not bound to TTS engine
+10-17 17:13:55.845  3542  3542 W cr_AwContents: WebView.destroy() called while WebView is still attached to window.
+10-17 17:13:55.847  3542  3542 D LifecycleMonitor: Lifecycle status change: com.ulasgrup.terminal.MainActivity@5de15d9 in: DESTROYED
+10-17 17:13:55.847  3542  3542 V ActivityScenario: Update currentActivityStage to DESTROYED, currentActivity=null
+10-17 17:13:55.853  3542  3561 I TestRunner: finished: acilir_sayfa_yuklenir_kopru_calisir_ve_cokmez(com.ulasgrup.terminal.UygulamaTesti)

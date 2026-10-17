@@ -1,0 +1,168 @@
+Downloading https://services.gradle.org/distributions/gradle-8.9-bin.zip
+............10%.............20%.............30%.............40%.............50%.............60%.............70%.............80%.............90%.............100%
+
+Welcome to Gradle 8.9!
+
+Here are the highlights of this release:
+ - Enhanced Error and Warning Messages
+ - IDE Integration Improvements
+ - Daemon JVM Information
+
+For more details see https://docs.gradle.org/8.9/release-notes.html
+
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.9/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:generateDebugBuildConfig
+> Task :app:javaPreCompileDebug
+> Task :app:generateDebugResValues
+> Task :app:checkDebugAarMetadata
+> Task :app:mapDebugSourceSetPaths
+> Task :app:generateDebugResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :app:mergeDebugResources
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :app:preDebugAndroidTestBuild SKIPPED
+> Task :app:processDebugAndroidTestManifest
+> Task :app:generateDebugAndroidTestBuildConfig
+> Task :app:javaPreCompileDebugAndroidTest
+> Task :app:checkDebugAndroidTestAarMetadata
+> Task :app:generateDebugAndroidTestResValues
+> Task :app:mapDebugAndroidTestSourceSetPaths
+> Task :app:generateDebugAndroidTestResources
+> Task :app:mergeDebugAndroidTestResources
+> Task :app:mergeDebugShaders
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:processDebugManifestForPackage
+> Task :app:processDebugAndroidTestResources
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets
+> Task :app:compressDebugAssets
+> Task :app:processDebugJavaRes NO-SOURCE
+> Task :app:processDebugResources
+> Task :app:mergeDebugJavaResource
+
+> Task :app:compileDebugJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :app:bundleDebugClassesToCompileJar
+> Task :app:checkDebugDuplicateClasses
+> Task :app:compileDebugAndroidTestJavaWithJavac
+> Task :app:mergeLibDexDebug
+> Task :app:dexBuilderDebug
+> Task :app:mergeDebugJniLibFolders
+> Task :app:mergeDebugNativeLibs NO-SOURCE
+> Task :app:stripDebugDebugSymbols NO-SOURCE
+> Task :app:mergeProjectDexDebug
+> Task :app:validateSigningDebug
+> Task :app:writeDebugAppMetadata
+> Task :app:writeDebugSigningConfigVersions
+> Task :app:mergeDebugAndroidTestShaders
+> Task :app:compileDebugAndroidTestShaders NO-SOURCE
+> Task :app:generateDebugAndroidTestAssets UP-TO-DATE
+> Task :app:mergeDebugAndroidTestAssets
+> Task :app:compressDebugAndroidTestAssets
+> Task :app:processDebugAndroidTestJavaRes NO-SOURCE
+> Task :app:mergeDebugAndroidTestJavaResource
+> Task :app:checkDebugAndroidTestDuplicateClasses
+> Task :app:desugarDebugAndroidTestFileDependencies
+> Task :app:desugarDebugFileDependencies
+> Task :app:mergeLibDexDebugAndroidTest
+> Task :app:dexBuilderDebugAndroidTest
+> Task :app:mergeDebugAndroidTestJniLibFolders
+> Task :app:mergeProjectDexDebugAndroidTest
+> Task :app:mergeDebugAndroidTestNativeLibs NO-SOURCE
+> Task :app:stripDebugAndroidTestDebugSymbols NO-SOURCE
+> Task :app:validateSigningDebugAndroidTest
+> Task :app:writeDebugAndroidTestSigningConfigVersions
+> Task :ekran:preBuild UP-TO-DATE
+> Task :ekran:preDebugBuild UP-TO-DATE
+> Task :ekran:generateDebugBuildConfig
+> Task :app:mergeExtDexDebugAndroidTest
+> Task :ekran:checkDebugAarMetadata
+> Task :ekran:javaPreCompileDebug
+> Task :ekran:generateDebugResValues
+> Task :ekran:mapDebugSourceSetPaths
+> Task :ekran:generateDebugResources
+> Task :ekran:createDebugCompatibleScreenManifests
+> Task :ekran:mergeDebugResources
+> Task :ekran:extractDeepLinksDebug
+> Task :ekran:processDebugMainManifest
+> Task :ekran:processDebugManifest
+> Task :ekran:preDebugAndroidTestBuild SKIPPED
+> Task :ekran:processDebugAndroidTestManifest
+> Task :ekran:processDebugManifestForPackage
+> Task :ekran:generateDebugAndroidTestBuildConfig
+> Task :ekran:javaPreCompileDebugAndroidTest
+> Task :app:packageDebugAndroidTest
+> Task :app:createDebugAndroidTestApkListingFileRedirect
+> Task :ekran:generateDebugAndroidTestResValues
+> Task :ekran:checkDebugAndroidTestAarMetadata
+> Task :ekran:mapDebugAndroidTestSourceSetPaths
+> Task :ekran:generateDebugAndroidTestResources
+> Task :ekran:mergeDebugAndroidTestResources
+> Task :ekran:mergeDebugShaders
+> Task :ekran:compileDebugShaders NO-SOURCE
+> Task :ekran:generateDebugAssets UP-TO-DATE
+> Task :ekran:mergeDebugAssets
+> Task :ekran:compressDebugAssets
+> Task :ekran:processDebugJavaRes NO-SOURCE
+> Task :ekran:processDebugAndroidTestResources
+> Task :ekran:mergeDebugJavaResource
+> Task :ekran:processDebugResources
+> Task :ekran:checkDebugDuplicateClasses
+
+> Task :ekran:compileDebugJavaWithJavac
+Note: /home/runner/work/ulas-terminal-android/ulas-terminal-android/ekran/src/main/java/com/ulasgrup/ekran/EkranActivity.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :ekran:desugarDebugFileDependencies
+> Task :ekran:bundleDebugClassesToCompileJar
+> Task :ekran:mergeExtDexDebug
+> Task :ekran:compileDebugAndroidTestJavaWithJavac
+> Task :ekran:mergeLibDexDebug
+> Task :ekran:dexBuilderDebug
+> Task :ekran:mergeDebugJniLibFolders
+> Task :ekran:mergeDebugNativeLibs NO-SOURCE
+> Task :ekran:stripDebugDebugSymbols NO-SOURCE
+> Task :ekran:validateSigningDebug
+> Task :ekran:mergeProjectDexDebug
+> Task :ekran:writeDebugAppMetadata
+> Task :ekran:writeDebugSigningConfigVersions
+> Task :ekran:mergeDebugAndroidTestShaders
+> Task :ekran:compileDebugAndroidTestShaders NO-SOURCE
+> Task :ekran:generateDebugAndroidTestAssets UP-TO-DATE
+> Task :ekran:mergeDebugAndroidTestAssets
+> Task :ekran:compressDebugAndroidTestAssets
+> Task :ekran:processDebugAndroidTestJavaRes NO-SOURCE
+> Task :ekran:mergeDebugAndroidTestJavaResource
+> Task :ekran:checkDebugAndroidTestDuplicateClasses
+> Task :ekran:desugarDebugAndroidTestFileDependencies
+> Task :ekran:mergeExtDexDebugAndroidTest
+> Task :ekran:mergeLibDexDebugAndroidTest
+> Task :ekran:dexBuilderDebugAndroidTest
+> Task :ekran:packageDebug
+> Task :ekran:createDebugApkListingFileRedirect
+> Task :ekran:mergeProjectDexDebugAndroidTest
+> Task :ekran:mergeDebugAndroidTestJniLibFolders
+> Task :ekran:mergeDebugAndroidTestNativeLibs NO-SOURCE
+> Task :ekran:stripDebugAndroidTestDebugSymbols NO-SOURCE
+> Task :ekran:validateSigningDebugAndroidTest
+> Task :ekran:writeDebugAndroidTestSigningConfigVersions
+> Task :ekran:packageDebugAndroidTest
+> Task :ekran:createDebugAndroidTestApkListingFileRedirect
+> Task :app:mergeExtDexDebug
+> Task :ekran:connectedDebugAndroidTest
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect
+[EmulatorConsole]: Failed to start Emulator console for 5554
+
+> Task :app:connectedDebugAndroidTest
+Starting 1 tests on emulator-5554 - 10
+
+BUILD SUCCESSFUL in 1m 20s
+114 actionable tasks: 114 executed

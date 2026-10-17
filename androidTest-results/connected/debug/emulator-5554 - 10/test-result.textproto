@@ -1,0 +1,68 @@
+# 2026-10-17T17:13:57.631798965Z:
+test_suite_meta_data {
+  scheduled_test_case_count: 1
+}
+test_status: PASSED
+test_result {
+  test_case {
+    test_class: "UygulamaTesti"
+    test_package: "com.ulasgrup.terminal"
+    test_method: "acilir_sayfa_yuklenir_kopru_calisir_ve_cokmez"
+    start_time {
+      seconds: 1792257225
+      nanos: 124000000
+    }
+    end_time {
+      seconds: 1792257237
+      nanos: 10000000
+    }
+  }
+  test_status: PASSED
+  output_artifact {
+    label {
+      label: "logcat"
+      namespace: "android"
+    }
+    source_path {
+      path: "/home/runner/work/ulas-terminal-android/ulas-terminal-android/app/build/outputs/androidTest-results/connected/debug/emulator-5554 - 10/logcat-com.ulasgrup.terminal.UygulamaTesti-acilir_sayfa_yuklenir_kopru_calisir_ve_cokmez.txt"
+    }
+  }
+  output_artifact {
+    label {
+      label: "device-info"
+      namespace: "android"
+    }
+    source_path {
+      path: "/home/runner/work/ulas-terminal-android/ulas-terminal-android/app/build/outputs/androidTest-results/connected/debug/emulator-5554 - 10/device-info.pb"
+    }
+  }
+  output_artifact {
+    label {
+      label: "device-info.meminfo"
+      namespace: "android"
+    }
+    source_path {
+      path: "/home/runner/work/ulas-terminal-android/ulas-terminal-android/app/build/outputs/androidTest-results/connected/debug/emulator-5554 - 10/meminfo"
+    }
+  }
+  output_artifact {
+    label {
+      label: "device-info.cpuinfo"
+      namespace: "android"
+    }
+    source_path {
+      path: "/home/runner/work/ulas-terminal-android/ulas-terminal-android/app/build/outputs/androidTest-results/connected/debug/emulator-5554 - 10/cpuinfo"
+    }
+  }
+}
+output_artifact {
+  label {
+    label: "test-results.log"
+    namespace: "com.google.testing.platform.runtime.android.driver.AndroidInstrumentationDriver"
+  }
+  source_path {
+    path: "/home/runner/work/ulas-terminal-android/ulas-terminal-android/app/build/outputs/androidTest-results/connected/debug/emulator-5554 - 10/testlog/test-results.log"
+  }
+  type: TEST_DATA
+  mime_type: "text/plain"
+}
