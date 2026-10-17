@@ -9,4 +9,9 @@
     <string name="iptal">Vazgeç</string>
     <string name="baglanti_yok">Sunucuya ulaşılamıyor</string>
     <string name="baglanti_aciklama">İnternet bağlantısı gelince ekran kendiliğinden açılacak.</string>
+    <string name="sertifika_baslik">Güvenli bağlantı kurulamadı</string>
+    <string name="sertifika_aciklama">Bu cihaz sitenin güvenlik sertifikasını tanımıyor. Cihazın tarih/saatini ve Android güncellemelerini kontrol edin.</string>
+    <string name="acilmadi_baslik">Ekran açılamadı</string>
+    <string name="acilmadi_aciklama">Sayfa geldi ama bu cihazın tarayıcı bileşeni çalıştıramadı. Play Store\'dan "Android System WebView" uygulamasını güncelleyin.</string>
+    <string name="menu_ipucu">Menü için kumandada Geri tuşuna basın.</string>
 </resources>
