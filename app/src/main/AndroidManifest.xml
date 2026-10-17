@@ -72,6 +72,19 @@
             </intent-filter>
         </activity-alias>
 
+        <!-- Kiosk modu (el terminali): panelden açılınca "ana ekran" olarak seçilebilir; Ana ekran tuşu uygulamaya döner -->
+        <activity-alias
+            android:name=".TerminalAnaEkran"
+            android:targetActivity=".MainActivity"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity-alias>
+
         <receiver
             android:name=".AcilisAlici"
             android:exported="true">

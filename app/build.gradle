@@ -8,8 +8,8 @@ android {
         // Nordic ID HH83/HH85 Android 9 (API 28); daha eski cihazlar da çalışır
         minSdkVersion 24
         targetSdkVersion 34
-        versionCode 21
-        versionName '1.11.0'
+        versionCode 22
+        versionName '1.12.0'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     signingConfigs {

@@ -460,6 +460,72 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
             });
         }
         @JavascriptInterface public boolean ekranModundaMi() { return ekran; }
+
+        /** Ayırt edilebilir tonlar: ok / uyari / hata (okuyucunun ya da cihazın hoparlörü + titreşim) */
+        @JavascriptInterface public void ton(String tur) { runOnUiThread(() -> tonCal(tur)); }
+
+        /** Kiosk modu yalnız panelden (cihaz ayarı) gelir */
+        @JavascriptInterface public void kiosk(boolean a) {
+            runOnUiThread(() -> {
+                boolean degisti = Kiosk.ayarla(MainActivity.this, a);
+                kioskUygula();
+                // İlk açılışta Android'e "ana ekran: Ulaş Terminal" seçtirilir (cihaz sahibi değilse tek yol)
+                if (degisti && a && !Kiosk.varsayilanAnaEkran(MainActivity.this)) {
+                    android.widget.Toast.makeText(MainActivity.this, R.string.kiosk_ana_ekran_sec, android.widget.Toast.LENGTH_LONG).show();
+                    try { startActivity(new Intent(android.provider.Settings.ACTION_HOME_SETTINGS)); } catch (Exception ignored) { }
+                }
+            });
+        }
+
+        /** Yönetici çıkışı (sunucu PIN'i doğruladıktan sonra sayfa çağırır): süre boyunca Android ayarları açık */
+        @JavascriptInterface public void kioskAra(int dakika) {
+            runOnUiThread(() -> {
+                Kiosk.ara(MainActivity.this, dakika);
+                Kiosk.sabitle(MainActivity.this, false);
+                try { startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS)); } catch (Exception ignored) { }
+            });
+        }
+
+        /** Wi-Fi ayarı (bağlantı koparsa PIN'siz): 3 dakika */
+        @JavascriptInterface public void wifi() {
+            runOnUiThread(() -> {
+                if (Kiosk.acik(MainActivity.this)) { Kiosk.ara(MainActivity.this, 3); Kiosk.sabitle(MainActivity.this, false); }
+                try { startActivity(new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS)); } catch (Exception ignored) { }
+            });
+        }
+    }
+
+    private android.media.ToneGenerator tonUretici;
+
+    /** Okuyucu bağlı değilse cihazın hoparlörü (ToneGenerator) ve titreşim motoru */
+    private void tonCal(String tur) {
+        if (okuyucu != null && okuyucu.ton(tur)) return;
+        android.content.SharedPreferences p = getSharedPreferences("ulas_okuyucu", MODE_PRIVATE);
+        boolean sesAcik = okuyucu != null ? okuyucu.sesTercihi() : p.getBoolean("ses", true);
+        boolean titresimAcik = okuyucu != null ? okuyucu.titresimTercihi() : p.getBoolean("titresim", true);
+        boolean hata = "hata".equals(tur), uyari = "uyari".equals(tur);
+        try {
+            if (sesAcik) {
+                if (tonUretici == null) tonUretici = new android.media.ToneGenerator(android.media.AudioManager.STREAM_NOTIFICATION, 100);
+                tonUretici.startTone(hata ? android.media.ToneGenerator.TONE_CDMA_ABBR_REORDER : uyari ? android.media.ToneGenerator.TONE_PROP_BEEP2 : android.media.ToneGenerator.TONE_PROP_BEEP, hata ? 450 : uyari ? 300 : 120);
+            }
+        } catch (Exception ignored) { }
+        try {
+            if (titresimAcik && (hata || uyari)) {
+                android.os.Vibrator v = (android.os.Vibrator) getSystemService(VIBRATOR_SERVICE);
+                long[] desen = hata ? new long[]{0, 120, 80, 120} : new long[]{0, 70, 90, 70};
+                if (v != null && v.hasVibrator()) {
+                    if (Build.VERSION.SDK_INT >= 26) v.vibrate(android.os.VibrationEffect.createWaveform(desen, -1));
+                    else v.vibrate(desen, -1);
+                }
+            }
+        } catch (Exception ignored) { }
+    }
+
+    /** Kiosk açıksa (ve geçici çıkışta değilse) ekran sabitlenir; kapalıysa bırakılır. Ekran (TV) modunda uygulanmaz. */
+    private void kioskUygula() {
+        boolean sabit = !ekran && Kiosk.acik(this) && !Kiosk.arada(this);
+        Kiosk.sabitle(this, sabit);
     }
 
     /** Kumandada Geri / Menü: ekran modunda uygulama kapanmaz, küçük bir menü açılır */
@@ -522,6 +588,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
     public void onBackPressed() {
         if (ekran) { ekranMenusu(); return; }
         if (web.canGoBack()) web.goBack();
+        else if (Kiosk.acik(this)) { /* kiosk: uygulamadan çıkılmaz */ }
         else super.onBackPressed();
     }
 
@@ -537,6 +604,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
         zamanlayici.removeCallbacks(bekciDongusu);
         zamanlayici.postDelayed(bekciDongusu, 12000);
         tamEkran();
+        kioskUygula();
     }
 
     @Override
@@ -566,6 +634,7 @@ public class MainActivity extends AppCompatActivity implements NurOkuyucu.Dinley
         if (okuyucu != null) okuyucu.kapat();
         try { stopService(new Intent(this, HazirServis.class)); } catch (Exception ignored) { }
         if (ses != null) { try { ses.shutdown(); } catch (Exception ignored) { } }
+        if (tonUretici != null) { try { tonUretici.release(); } catch (Exception ignored) { } }
         zamanlayici.removeCallbacksAndMessages(null);
         web.destroy();
         super.onDestroy();

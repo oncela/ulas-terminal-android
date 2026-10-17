@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Ulaş Terminal</string>
+    <string name="kiosk_ana_ekran_sec">Kiosk modu: listeden \"Ulaş Terminal\" seçip \"Her zaman\" deyin</string>
     <string name="okuyucu_sec">Okuyucuyu seçin</string>
     <string name="baglanti_yok">Sunucuya ulaşılamıyor. İnternet bağlantısını kontrol edin.</string>
     <string name="tekrar_dene">Tekrar dene</string>

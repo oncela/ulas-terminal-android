@@ -246,6 +246,25 @@ public class NurOkuyucu {
         try { if (bagli) api.setSetupAutoPeriod(tercihler().getBoolean("tasarruf", false) ? 3 : 0); } catch (Exception e) { Log.w(TAG, "tasarruf ayarlanamadı", e); }
     }
 
+    /**
+     * Ayırt edilebilir tonlar (sunucu cevabı / sayfa uyarısı): uyarı = iki kısa, hata = uzun. Okuyucu bağlıysa okuyucunun
+     * hoparlöründen; değilse false döner, uygulama telefonun hoparlörünü kullanır. Ses / titreşim tercihine uyulur.
+     */
+    public boolean ton(String tur) {
+        if (!bagli) return false;
+        try {
+            if ("hata".equals(tur)) { sesVer(400); titret(300); }
+            else if ("uyari".equals(tur)) {
+                sesVer(80); titret(80);
+                new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> { try { sesVer(80); titret(80); } catch (Exception ignored) { } }, 180);
+            } else { sesVer(40); }
+        } catch (Exception ignored) { }
+        return true;
+    }
+
+    public boolean sesTercihi() { return sesAcik(); }
+    public boolean titresimTercihi() { return titresimAcik(); }
+
     /** Sunucunun cevabına göre geri bildirim: hatada uzun bip ve çift titreşim (okuma bipinden ayırt edilsin) */
     public void sonuc(boolean hata) {
         if (!bagli || !hata) return;
